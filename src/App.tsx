@@ -23,12 +23,16 @@ import {
   ProxyPort,
   MinerWorker,
   PoolNodeItem,
-  AccessControlStore
+  AccessControlStore,
+  PoolCatalogEntry,
+  UpstreamPoolTarget,
+  MultiPoolStrategy
 } from './types';
 import {
   INITIAL_PROXIES,
   INITIAL_POOL_NODES,
-  SUPPORTED_ALGORITHMS
+  SUPPORTED_ALGORITHMS,
+  FAMOUS_POOL_CATALOG
 } from './mockData';
 import AccessControlPanel from './AccessControlPanel';
 
@@ -76,11 +80,33 @@ export default function App() {
   const [accessLoading, setAccessLoading] = useState<boolean>(false);
 
   // Sub-tabs and filters in Proxy Dashboard
-  const [proxySubTab, setProxySubTab] = useState<'devices' | 'wallets' | 'portInfo' | 'console'>('devices');
+  const [proxySubTab, setProxySubTab] = useState<
+    'devices' | 'multipool' | 'wallets' | 'portInfo' | 'console'
+  >('devices');
   const [deviceFilter, setDeviceFilter] = useState<'all' | 'online' | 'offline' | 'blocked'>('all');
   const [walletFilter, setWalletFilter] = useState<string>('all');
   const [workerSearch, setWorkerSearch] = useState<string>('');
   const [sidebarSearch, setSidebarSearch] = useState<string>('');
+
+  // Custom & Famous Pool Catalog + Multi-Pool Form State
+  const [customPools, setCustomPools] = useState<PoolCatalogEntry[]>([]);
+  const [selectedPresetPoolId, setSelectedPresetPoolId] = useState<string>(FAMOUS_POOL_CATALOG[0].id);
+  const [presetProtocol, setPresetProtocol] = useState<'TCP' | 'SSL'>('TCP');
+  const [presetWeight, setPresetWeight] = useState<string>('30');
+  const [presetSubaccount, setPresetSubaccount] = useState<string>('');
+
+  const [manualPoolName, setManualPoolName] = useState<string>('');
+  const [manualPoolCoin, setManualPoolCoin] = useState<string>('BTC');
+  const [manualPoolAlgo, setManualPoolAlgo] = useState<string>('SHA256');
+  const [manualPoolHost, setManualPoolHost] = useState<string>('');
+  const [manualPoolPort, setManualPoolPort] = useState<string>('3333');
+  const [manualPoolSslPort, setManualPoolSslPort] = useState<string>('443');
+  const [manualPoolProtocol, setManualPoolProtocol] = useState<'TCP' | 'SSL'>('TCP');
+  const [manualPoolWeight, setManualPoolWeight] = useState<string>('25');
+  const [manualPoolSubaccount, setManualPoolSubaccount] = useState<string>('');
+  const [saveManualToCatalog, setSaveManualToCatalog] = useState<boolean>(true);
+  const [formMultiPoolStrategy, setFormMultiPoolStrategy] =
+    useState<MultiPoolStrategy>('load_balance');
 
   // Modals
   const [inspectedWorker, setInspectedWorker] = useState<MinerWorker | null>(null);
@@ -168,6 +194,29 @@ export default function App() {
   useEffect(() => {
     fetchAccessState();
   }, [fetchAccessState]);
+
+  const fetchCustomPools = useCallback(async () => {
+    try {
+      const res = await fetch('/api/pools/custom');
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data.pools)) {
+          setCustomPools(data.pools);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to fetch custom pools:', err);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchCustomPools();
+  }, [fetchCustomPools]);
+
+  const allPoolCatalog = useMemo(
+    () => [...customPools, ...FAMOUS_POOL_CATALOG],
+    [customPools]
+  );
 
   const handleToggleGlobalAccessControl = async (enabled: boolean) => {
     try {
@@ -595,6 +644,7 @@ export default function App() {
     setFormTargetPool(proxy.targetPool);
     setFormTargetPort(String(proxy.targetPort));
     setFormBackupPool(proxy.backupPool);
+    setFormMultiPoolStrategy(proxy.multiPoolStrategy || 'load_balance');
     setFormFeeRate(String(proxy.feeRatePercent));
     setFormFeeWallet(proxy.feeWallet);
     setShowCreateProxyModal(true);
@@ -603,13 +653,14 @@ export default function App() {
   const openNewProxyModal = () => {
     setEditingProxy(null);
     setFormCoin('BTC');
-    setFormLabel(isFa ? 'خط اختصاصی جدید BTC' : 'BTC Dedicated Line');
+    setFormLabel(isFa ? 'خط چند استخری جدید BTC' : 'BTC Multi-Pool Line');
     setFormAlgorithm('SHA256');
     setFormListenPort(String(Math.floor(2010 + Math.random() * 4000)));
     setFormProtocol('SSL');
-    setFormTargetPool('btc.f2pool.com');
-    setFormTargetPort('1314');
-    setFormBackupPool('stratum.antpool.com:3333');
+    setFormTargetPool('btc.viabtc.io');
+    setFormTargetPort('3333');
+    setFormBackupPool('btc.f2pool.com:1314');
+    setFormMultiPoolStrategy('load_balance');
     setFormFeeRate('1.20');
     setFormFeeWallet('bitlite_vault.devfee');
     setShowCreateProxyModal(true);
@@ -637,6 +688,7 @@ export default function App() {
                 targetPool: formTargetPool,
                 targetPort: targetPortNum,
                 backupPool: formBackupPool,
+                multiPoolStrategy: formMultiPoolStrategy,
                 feeRatePercent: feeNum,
                 feeWallet: formFeeWallet
               }
@@ -646,6 +698,9 @@ export default function App() {
       triggerToast(isFa ? 'تنظیمات پورت با موفقیت ذخیره شد' : 'Port configuration updated');
     } else {
       const newId = `${formCoin.toLowerCase()}-${portNum}-${Date.now()}`;
+      const matchedCatalog = allPoolCatalog.find((c) => c.host === formTargetPool);
+      const backupHost = formBackupPool.split(':')[0] || 'btc.f2pool.com';
+      const backupPortNum = Number(formBackupPool.split(':')[1]) || 1314;
       const newProxy: ProxyPort = {
         id: newId,
         coin: formCoin,
@@ -659,6 +714,37 @@ export default function App() {
         targetPool: formTargetPool,
         targetPort: targetPortNum,
         backupPool: formBackupPool,
+        multiPoolStrategy: formMultiPoolStrategy,
+        upstreamPools: [
+          {
+            id: `up-1-${Date.now()}`,
+            poolName: matchedCatalog ? matchedCatalog.name : `${formTargetPool}`,
+            host: formTargetPool,
+            port: targetPortNum,
+            protocol: formProtocol === 'SSL' ? 'SSL' : 'TCP',
+            weightPercent: 70,
+            workerSubaccount: formFeeWallet.split('.')[0] || 'miner_sub01',
+            status: 'connected',
+            latencyMs: 42,
+            activeHashrate: 147.35,
+            acceptedShares: 868,
+            enabled: true
+          },
+          {
+            id: `up-2-${Date.now()}`,
+            poolName: `Backup (${backupHost})`,
+            host: backupHost,
+            port: backupPortNum,
+            protocol: 'TCP',
+            weightPercent: 30,
+            workerSubaccount: formFeeWallet.split('.')[0] || 'miner_sub01',
+            status: 'connected',
+            latencyMs: 54,
+            activeHashrate: 63.15,
+            acceptedShares: 372,
+            enabled: true
+          }
+        ],
         feeRatePercent: feeNum,
         feeWallet: formFeeWallet,
         feeWorkerName: `bitlite_${formCoin.toLowerCase()}_fee`,
@@ -855,6 +941,298 @@ export default function App() {
     setPoolNodes((prev) => [newNode, ...prev]);
     setShowCreateNodeModal(false);
     triggerToast(isFa ? 'نود اختصاصی استخر راه‌اندازی شد' : 'Self-hosted pool node deployed');
+  };
+
+  // Multi-Pool Simultaneous Routing Handlers
+  const recalculateUpstreamHashrates = (
+    pools: UpstreamPoolTarget[],
+    totalHashrate: number
+  ): UpstreamPoolTarget[] => {
+    const enabledPools = pools.filter((u) => u.enabled && u.weightPercent > 0);
+    const totalWeight = enabledPools.reduce((acc, u) => acc + u.weightPercent, 0);
+    return pools.map((u) => {
+      if (!u.enabled || u.weightPercent <= 0 || totalWeight <= 0) {
+        return {
+          ...u,
+          activeHashrate: 0,
+          status: u.enabled ? 'standby' : 'unreachable'
+        };
+      }
+      const shareRatio = u.weightPercent / totalWeight;
+      return {
+        ...u,
+        status: 'connected',
+        activeHashrate: Number((totalHashrate * shareRatio).toFixed(2))
+      };
+    });
+  };
+
+  const handleChangeMultiPoolStrategy = (strategy: MultiPoolStrategy) => {
+    setProxies((prev) =>
+      prev.map((p) => (p.id === activeProxy.id ? { ...p, multiPoolStrategy: strategy } : p))
+    );
+    triggerToast(
+      isFa
+        ? 'استراتژی مسیریابی چند استخری همزمان بروزرسانی شد'
+        : 'Updated simultaneous multi-pool routing strategy'
+    );
+  };
+
+  const handleUpdatePoolWeight = (targetId: string, nextWeight: number) => {
+    const clamped = Math.max(0, Math.min(100, Math.round(nextWeight)));
+    setProxies((prev) =>
+      prev.map((p) => {
+        if (p.id !== activeProxy.id) return p;
+        const updated = p.upstreamPools.map((u) =>
+          u.id === targetId ? { ...u, weightPercent: clamped } : u
+        );
+        return {
+          ...p,
+          upstreamPools: recalculateUpstreamHashrates(updated, p.currentHashrate)
+        };
+      })
+    );
+  };
+
+  const handleEqualizePoolWeights = () => {
+    setProxies((prev) =>
+      prev.map((p) => {
+        if (p.id !== activeProxy.id) return p;
+        const enabledCount = p.upstreamPools.filter((u) => u.enabled).length;
+        if (enabledCount === 0) return p;
+        const baseWeight = Math.floor(100 / enabledCount);
+        let remainder = 100 - baseWeight * enabledCount;
+        const updated = p.upstreamPools.map((u) => {
+          if (!u.enabled) return { ...u, weightPercent: 0 };
+          const w = baseWeight + (remainder > 0 ? 1 : 0);
+          if (remainder > 0) remainder -= 1;
+          return { ...u, weightPercent: w };
+        });
+        return {
+          ...p,
+          upstreamPools: recalculateUpstreamHashrates(updated, p.currentHashrate)
+        };
+      })
+    );
+    triggerToast(
+      isFa
+        ? 'درصد توزیع بار بین تمام استخرهای فعال به صورت مساوی تنظیم شد'
+        : 'Equalized load-balancing weights across active pools'
+    );
+  };
+
+  const handleToggleUpstreamPool = (targetId: string) => {
+    setProxies((prev) =>
+      prev.map((p) => {
+        if (p.id !== activeProxy.id) return p;
+        const updated = p.upstreamPools.map((u) =>
+          u.id === targetId
+            ? {
+                ...u,
+                enabled: !u.enabled,
+                weightPercent: !u.enabled && u.weightPercent === 0 ? 25 : u.weightPercent
+              }
+            : u
+        );
+        return {
+          ...p,
+          upstreamPools: recalculateUpstreamHashrates(updated, p.currentHashrate)
+        };
+      })
+    );
+    triggerToast(
+      isFa ? 'وضعیت اتصال استخر در کلاستر همزمان تغییر یافت' : 'Toggled upstream pool state'
+    );
+  };
+
+  const handleSetPrimaryUpstreamPool = (target: UpstreamPoolTarget) => {
+    setProxies((prev) =>
+      prev.map((p) => {
+        if (p.id !== activeProxy.id) return p;
+        return {
+          ...p,
+          targetPool: target.host,
+          targetPort: target.port
+        };
+      })
+    );
+    triggerToast(
+      isFa
+        ? `استخر ${target.poolName} (${target.host}:${target.port}) به عنوان استخر اصلی تنظیم شد`
+        : `Set ${target.poolName} as primary upstream pool`
+    );
+  };
+
+  const handleRemoveUpstreamPool = (targetId: string) => {
+    if (activeProxy.upstreamPools.length <= 1) {
+      triggerToast(
+        isFa
+          ? 'حداقل یک استخر مقصد باید روی این پورت باقی بماند'
+          : 'At least one upstream pool must remain on this port'
+      );
+      return;
+    }
+    setProxies((prev) =>
+      prev.map((p) => {
+        if (p.id !== activeProxy.id) return p;
+        const remaining = p.upstreamPools.filter((u) => u.id !== targetId);
+        return {
+          ...p,
+          targetPool: remaining[0].host,
+          targetPort: remaining[0].port,
+          upstreamPools: recalculateUpstreamHashrates(remaining, p.currentHashrate)
+        };
+      })
+    );
+    triggerToast(isFa ? 'استخر از لیست چند استخری این پورت حذف شد' : 'Removed pool from port');
+  };
+
+  const handleAddPresetPoolToPort = (e: React.FormEvent) => {
+    e.preventDefault();
+    const preset =
+      allPoolCatalog.find((c) => c.id === selectedPresetPoolId) || allPoolCatalog[0];
+    if (!preset) return;
+
+    const chosenPort =
+      presetProtocol === 'SSL' && preset.sslPort ? preset.sslPort : preset.tcpPort;
+    const weight = Math.max(0, Math.min(100, Number(presetWeight) || 25));
+
+    const newTarget: UpstreamPoolTarget = {
+      id: `up-preset-${Date.now()}`,
+      poolName: isFa ? preset.nameFa : preset.name,
+      host: preset.host,
+      port: chosenPort,
+      protocol: presetProtocol,
+      weightPercent: weight,
+      workerSubaccount: presetSubaccount.trim() || `${activeProxy.coin.toLowerCase()}_worker01`,
+      status: weight > 0 ? 'connected' : 'standby',
+      latencyMs: Math.floor(34 + Math.random() * 25),
+      activeHashrate: 0,
+      acceptedShares: Math.floor(150 + Math.random() * 800),
+      enabled: true
+    };
+
+    setProxies((prev) =>
+      prev.map((p) => {
+        if (p.id !== activeProxy.id) return p;
+        const nextPools = [...p.upstreamPools, newTarget];
+        return {
+          ...p,
+          upstreamPools: recalculateUpstreamHashrates(nextPools, p.currentHashrate)
+        };
+      })
+    );
+
+    setPresetSubaccount('');
+    triggerToast(
+      isFa
+        ? `استخر ${preset.name} (${preset.host}:${chosenPort}) به لیست چند استخری همزمان اضافه شد`
+        : `Added ${preset.name} (${preset.host}:${chosenPort}) to simultaneous multi-pool router`
+    );
+  };
+
+  const handleAddManualPoolToPort = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const cleanName = manualPoolName.trim();
+    const cleanHost = manualPoolHost
+      .trim()
+      .replace(/^stratum\+(tcp|ssl|tls):\/\//i, '')
+      .split(':')[0];
+    const portNum = Math.max(1, Math.min(65535, Number(manualPoolPort) || 3333));
+    const sslPortNum = manualPoolSslPort
+      ? Math.max(1, Math.min(65535, Number(manualPoolSslPort)))
+      : undefined;
+    const weight = Math.max(0, Math.min(100, Number(manualPoolWeight) || 25));
+
+    if (!cleanName || !cleanHost) {
+      triggerToast(
+        isFa ? 'لطفاً نام استخر و آدرس سرور (Host) را وارد کنید' : 'Please enter pool name and host'
+      );
+      return;
+    }
+
+    const newTarget: UpstreamPoolTarget = {
+      id: `up-manual-${Date.now()}`,
+      poolName: cleanName,
+      host: cleanHost,
+      port: portNum,
+      protocol: manualPoolProtocol,
+      weightPercent: weight,
+      workerSubaccount:
+        manualPoolSubaccount.trim() || `${activeProxy.coin.toLowerCase()}_custom01`,
+      status: weight > 0 ? 'connected' : 'standby',
+      latencyMs: Math.floor(38 + Math.random() * 28),
+      activeHashrate: 0,
+      acceptedShares: 120,
+      enabled: true
+    };
+
+    setProxies((prev) =>
+      prev.map((p) => {
+        if (p.id !== activeProxy.id) return p;
+        const nextPools = [...p.upstreamPools, newTarget];
+        return {
+          ...p,
+          upstreamPools: recalculateUpstreamHashrates(nextPools, p.currentHashrate)
+        };
+      })
+    );
+
+    if (saveManualToCatalog) {
+      try {
+        const res = await fetch('/api/pools/custom', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: cleanName,
+            nameFa: cleanName,
+            coin: manualPoolCoin || activeProxy.coin,
+            algorithm: manualPoolAlgo || activeProxy.algorithm,
+            host: cleanHost,
+            tcpPort: portNum,
+            sslPort: sslPortNum,
+            regionEn: 'Custom Manual Pool',
+            regionFa: 'استخر اختصاصی دستی'
+          })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data.pools)) {
+            setCustomPools(data.pools);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to persist custom pool:', err);
+      }
+    }
+
+    setManualPoolName('');
+    setManualPoolHost('');
+    setManualPoolSubaccount('');
+    triggerToast(
+      isFa
+        ? `استخر دستی "${cleanName}" (${cleanHost}:${portNum}) با موفقیت اضافه و فعال شد`
+        : `Manual pool "${cleanName}" (${cleanHost}:${portNum}) added and activated`
+    );
+  };
+
+  const handleDeleteCustomPool = async (poolId: string) => {
+    try {
+      const res = await fetch(`/api/pools/custom/${poolId}`, {
+        method: 'DELETE'
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data.pools)) {
+          setCustomPools(data.pools);
+        }
+        triggerToast(
+          isFa ? 'استخر دستی از لیست دائمی حذف شد' : 'Removed custom pool from catalog'
+        );
+      }
+    } catch (err) {
+      console.error('Failed to delete custom pool:', err);
+    }
   };
 
   // SVG Chart helper for activeProxy
@@ -1430,11 +1808,28 @@ export default function App() {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-slate-400 font-sans">
-                      {isFa ? 'استخر مقصد (Upstream)' : 'Upstream Pool'}:
+                      {isFa ? 'استخر اصلی (Primary)' : 'Primary Pool'}:
                     </span>
                     <span className="text-slate-300 truncate max-w-[210px]" dir="ltr">
                       {activeProxy.targetPool}:{activeProxy.targetPort}
                     </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-400 font-sans">
+                      {isFa ? 'چند استخری همزمان' : 'Simultaneous Pools'}:
+                    </span>
+                    <button
+                      onClick={() => setProxySubTab('multipool')}
+                      className="text-indigo-400 hover:text-indigo-300 font-sans font-medium underline underline-offset-4 cursor-pointer"
+                    >
+                      {
+                        activeProxy.upstreamPools.filter(
+                          (u) => u.enabled && u.weightPercent > 0
+                        ).length
+                      }{' '}
+                      {isFa ? 'استخر فعال' : 'Active'} / {activeProxy.upstreamPools.length}{' '}
+                      {isFa ? 'ثبت‌شده' : 'Total'}
+                    </button>
                   </div>
                 </div>
 
@@ -1494,11 +1889,11 @@ export default function App() {
               </div>
             </div>
 
-            {/* BOTTOM SECTION: Worker Table / Wallet List / Port Details / Port Console */}
+            {/* BOTTOM SECTION: Worker Table / Multi-Pool / Wallet List / Port Details / Port Console */}
             <div className="bg-[#121626] border border-slate-800/90 rounded-xl overflow-hidden">
               {/* Sub-Navigation & Filter Bar */}
               <div className="p-4 border-b border-slate-800/80 flex flex-wrap items-center justify-between gap-4">
-                <div className="flex items-center gap-1 p-1 bg-[#0B0E17] rounded-lg border border-slate-800">
+                <div className="flex flex-wrap items-center gap-1 p-1 bg-[#0B0E17] rounded-lg border border-slate-800">
                   <button
                     onClick={() => setProxySubTab('devices')}
                     className={`px-3.5 py-1.5 rounded-md text-xs font-medium transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
@@ -1508,6 +1903,17 @@ export default function App() {
                     }`}
                   >
                     {isFa ? 'مدیریت ماینرها' : 'Device Management'}
+                  </button>
+                  <button
+                    onClick={() => setProxySubTab('multipool')}
+                    className={`px-3.5 py-1.5 rounded-md text-xs font-medium transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+                      proxySubTab === 'multipool'
+                        ? 'bg-indigo-600 text-white'
+                        : 'text-slate-400 hover:text-slate-200'
+                    }`}
+                  >
+                    {isFa ? 'چند استخری همزمان' : 'Multi-Pool Routing'} (
+                    {activeProxy.upstreamPools.length})
                   </button>
                   <button
                     onClick={() => setProxySubTab('wallets')}
@@ -1832,6 +2238,468 @@ export default function App() {
                       </tbody>
                     </table>
                   )}
+                </div>
+              )}
+
+              {/* TAB 1.5: MULTI-POOL SIMULTANEOUS ROUTING & MANUAL POOL ADDITION */}
+              {proxySubTab === 'multipool' && (
+                <div className="p-5 space-y-6 text-xs">
+                  {/* Strategy Header & Equalize Weights */}
+                  <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-800/80">
+                    <div>
+                      <h3 className="text-sm font-bold text-white">
+                        {isFa
+                          ? `مدیریت چند استخری همزمان (Multi-Pool) — پورت [${activeProxy.listenPort}]`
+                          : `Simultaneous Multi-Pool Routing — Port [${activeProxy.listenPort}]`}
+                      </h3>
+                      <p className="text-xs text-slate-400 mt-1">
+                        {isFa
+                          ? 'اتصال همزمان ماینرهای این پورت به چندین استخر (ViaBTC، F2Pool، AntPool، Binance یا استخر دستی) با تقسیم بار درصدی و سوئیچ بدون قطعی.'
+                          : 'Connect this proxy port to multiple pools simultaneously (ViaBTC, F2Pool, AntPool, Binance, or manual pools) with live load-balancing and failover.'}
+                      </p>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-2.5">
+                      <div className="flex items-center gap-1 bg-[#0B0E17] p-1 rounded-lg border border-slate-800">
+                        {(
+                          [
+                            {
+                              id: 'load_balance',
+                              fa: 'توزیع بار همزمان (%)',
+                              en: 'Load Balance (%)'
+                            },
+                            {
+                              id: 'simultaneous_multi',
+                              fa: 'اتصال همزمان چندمسیره',
+                              en: 'Simultaneous Multi-Pool'
+                            },
+                            {
+                              id: 'priority_failover',
+                              fa: 'اولویت و بکاپ خودکار',
+                              en: 'Priority Failover'
+                            }
+                          ] as { id: MultiPoolStrategy; fa: string; en: string }[]
+                        ).map((st) => (
+                          <button
+                            key={st.id}
+                            onClick={() => handleChangeMultiPoolStrategy(st.id)}
+                            className={`px-3 py-1.5 rounded-md font-medium transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+                              activeProxy.multiPoolStrategy === st.id
+                                ? 'bg-indigo-600 text-white'
+                                : 'text-slate-400 hover:text-slate-200'
+                            }`}
+                          >
+                            {isFa ? st.fa : st.en}
+                          </button>
+                        ))}
+                      </div>
+
+                      <button
+                        onClick={handleEqualizePoolWeights}
+                        className="px-3.5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-medium transition-colors whitespace-nowrap shrink-0 cursor-pointer"
+                      >
+                        {isFa ? 'توزیع مساوی درصدها (100%)' : 'Equalize Weights (100%)'}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Active Simultaneous Upstream Pools Table */}
+                  <div className="overflow-x-auto border border-slate-800 rounded-xl bg-[#0D111C]">
+                    <table className="w-full text-start border-collapse">
+                      <thead>
+                        <tr className="border-b border-slate-800 text-[11px] font-semibold text-slate-400 bg-[#090C14]">
+                          <th className="py-3 px-4">{isFa ? 'نام استخر' : 'Pool Name'}</th>
+                          <th className="py-3 px-4">
+                            {isFa ? 'آدرس سرور و پورت' : 'Stratum Host : Port'}
+                          </th>
+                          <th className="py-3 px-4">{isFa ? 'پروتکل' : 'Protocol'}</th>
+                          <th className="py-3 px-4">
+                            {isFa ? 'زیرحساب / کیف‌پول' : 'Subaccount / Wallet'}
+                          </th>
+                          <th className="py-3 px-4">
+                            {isFa ? 'سهم توزیع همزمان (%)' : 'Load Share (%)'}
+                          </th>
+                          <th className="py-3 px-4 text-end">
+                            {isFa ? 'هش‌ریت فعال روی استخر' : 'Routed Hashrate'}
+                          </th>
+                          <th className="py-3 px-4 text-end">
+                            {isFa ? 'سهام / پینگ' : 'Shares / Latency'}
+                          </th>
+                          <th className="py-3 px-4 text-end">{isFa ? 'عملیات' : 'Actions'}</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-800/60 font-mono tabular-nums">
+                        {activeProxy.upstreamPools.map((up) => {
+                          const isPrimary =
+                            up.host === activeProxy.targetPool &&
+                            up.port === activeProxy.targetPort;
+                          return (
+                            <tr
+                              key={up.id}
+                              className={`transition-colors ${
+                                !up.enabled ? 'opacity-50 bg-slate-950/40' : 'hover:bg-slate-800/30'
+                              }`}
+                            >
+                              <td className="py-3.5 px-4 font-sans">
+                                <div className="flex items-center gap-2">
+                                  <span className="font-semibold text-white">{up.poolName}</span>
+                                  {isPrimary && (
+                                    <span className="text-[11px] text-indigo-400 font-medium">
+                                      · {isFa ? 'اصلی' : 'Primary'}
+                                    </span>
+                                  )}
+                                </div>
+                                <div className="text-[11px] text-slate-400 mt-0.5">
+                                  {up.enabled && up.weightPercent > 0
+                                    ? isFa
+                                      ? 'متصل و در حال دریافت سهام همزمان'
+                                      : 'Connected & receiving simultaneous shares'
+                                    : up.enabled
+                                    ? isFa
+                                      ? 'آماده‌باش (Standby Failover)'
+                                      : 'Standby Failover'
+                                    : isFa
+                                    ? 'غیرفعال شده'
+                                    : 'Disabled'}
+                                </div>
+                              </td>
+                              <td className="py-3.5 px-4 text-indigo-300" dir="ltr">
+                                {up.host}:{up.port}
+                              </td>
+                              <td className="py-3.5 px-4 text-slate-300" dir="ltr">
+                                {up.protocol}
+                              </td>
+                              <td className="py-3.5 px-4 text-slate-300" dir="ltr">
+                                {up.workerSubaccount || activeProxy.feeWallet}
+                              </td>
+                              <td className="py-3.5 px-4" dir="ltr">
+                                <div className="flex items-center gap-2 max-w-[170px]">
+                                  <input
+                                    type="range"
+                                    min={0}
+                                    max={100}
+                                    value={up.weightPercent}
+                                    onChange={(e) =>
+                                      handleUpdatePoolWeight(up.id, Number(e.target.value))
+                                    }
+                                    className="w-20 accent-indigo-500 cursor-pointer"
+                                  />
+                                  <input
+                                    type="number"
+                                    min={0}
+                                    max={100}
+                                    value={up.weightPercent}
+                                    onChange={(e) =>
+                                      handleUpdatePoolWeight(up.id, Number(e.target.value))
+                                    }
+                                    className="w-14 bg-[#090C14] border border-slate-800 rounded px-2 py-1 text-center text-white text-xs"
+                                  />
+                                  <span className="text-slate-400">%</span>
+                                </div>
+                              </td>
+                              <td
+                                className="py-3.5 px-4 text-end font-semibold text-emerald-400"
+                                dir="ltr"
+                              >
+                                {up.activeHashrate.toFixed(2)}
+                                {activeProxy.unit}
+                              </td>
+                              <td className="py-3.5 px-4 text-end text-slate-300" dir="ltr">
+                                {up.acceptedShares.toLocaleString()} · {up.latencyMs}ms
+                              </td>
+                              <td className="py-3.5 px-4 text-end font-sans">
+                                <div className="flex items-center justify-end gap-1.5">
+                                  <button
+                                    onClick={() => handleToggleUpstreamPool(up.id)}
+                                    className={`px-2.5 py-1 rounded text-xs font-medium transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+                                      up.enabled
+                                        ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30'
+                                        : 'bg-emerald-600 text-white hover:bg-emerald-500'
+                                    }`}
+                                  >
+                                    {up.enabled
+                                      ? isFa
+                                        ? 'توقف'
+                                        : 'Pause'
+                                      : isFa
+                                      ? 'فعال‌سازی'
+                                      : 'Enable'}
+                                  </button>
+                                  {!isPrimary && (
+                                    <button
+                                      onClick={() => handleSetPrimaryUpstreamPool(up)}
+                                      className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs transition-colors whitespace-nowrap shrink-0 cursor-pointer"
+                                    >
+                                      {isFa ? 'انتخاب به عنوان اصلی' : 'Make Primary'}
+                                    </button>
+                                  )}
+                                  <button
+                                    onClick={() => handleRemoveUpstreamPool(up.id)}
+                                    className="px-2.5 py-1 rounded bg-rose-600/20 hover:bg-rose-600/40 text-rose-300 border border-rose-500/30 text-xs transition-colors whitespace-nowrap shrink-0 cursor-pointer"
+                                  >
+                                    {isFa ? 'حذف' : 'Remove'}
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Two-Column Pool Addition Section: 1. Famous & Saved Pools (ViaBTC, F2Pool, AntPool...) | 2. Add Custom Pool Manually */}
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                    {/* Left 6 cols: Select from Famous Pools (ViaBTC, F2Pool, AntPool, Binance, Foundry...) */}
+                    <form
+                      onSubmit={handleAddPresetPoolToPort}
+                      className="lg:col-span-6 bg-[#0E121E] border border-slate-800 rounded-xl p-5 space-y-4 flex flex-col justify-between"
+                    >
+                      <div className="space-y-3.5">
+                        <div>
+                          <h4 className="text-sm font-bold text-white">
+                            {isFa
+                              ? '۱. افزودن سریع از استخرهای معتبر جهانی (ViaBTC, F2Pool, AntPool...)'
+                              : '1. Add Famous or Saved Pool (ViaBTC, F2Pool, AntPool...)'}
+                          </h4>
+                          <p className="text-xs text-slate-400 mt-0.5">
+                            {isFa
+                              ? 'استخر مورد نظر خود را از لیست استخرهای معروف یا استخرهای دستی ذخیره‌شده انتخاب و به کلاستر همزمان این پورت اضافه کنید.'
+                              : 'Select from pre-configured global mining pools or your saved custom pools to attach simultaneously to this port.'}
+                          </p>
+                        </div>
+
+                        <div>
+                          <label className="block text-slate-300 mb-1.5">
+                            {isFa ? 'انتخاب استخر (Famous & Custom Pools)' : 'Select Mining Pool'}
+                          </label>
+                          <select
+                            value={selectedPresetPoolId}
+                            onChange={(e) => setSelectedPresetPoolId(e.target.value)}
+                            className="w-full bg-[#090C14] border border-slate-800 rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-indigo-500"
+                          >
+                            {allPoolCatalog.map((pool) => (
+                              <option key={pool.id} value={pool.id}>
+                                {isFa ? pool.nameFa : pool.name} — {pool.host}:{pool.tcpPort} (
+                                {pool.coin} / {pool.algorithm})
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+
+                        <div className="grid grid-cols-3 gap-3">
+                          <div>
+                            <label className="block text-slate-300 mb-1">
+                              {isFa ? 'پروتکل اتصال' : 'Protocol'}
+                            </label>
+                            <select
+                              value={presetProtocol}
+                              onChange={(e) =>
+                                setPresetProtocol(e.target.value as 'TCP' | 'SSL')
+                              }
+                              className="w-full bg-[#090C14] border border-slate-800 rounded-lg px-3 py-2 text-white font-mono"
+                            >
+                              <option value="TCP">TCP</option>
+                              <option value="SSL">SSL / TLS</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label className="block text-slate-300 mb-1">
+                              {isFa ? 'سهم هش‌ریت (%)' : 'Weight (%)'}
+                            </label>
+                            <input
+                              type="number"
+                              min={0}
+                              max={100}
+                              dir="ltr"
+                              value={presetWeight}
+                              onChange={(e) => setPresetWeight(e.target.value)}
+                              className="w-full bg-[#090C14] border border-slate-800 rounded-lg px-3 py-2 text-white font-mono"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-slate-300 mb-1">
+                              {isFa ? 'نام زیرحساب / کیف‌پول' : 'Subaccount / Wallet'}
+                            </label>
+                            <input
+                              type="text"
+                              dir="ltr"
+                              value={presetSubaccount}
+                              onChange={(e) => setPresetSubaccount(e.target.value)}
+                              placeholder="viabtc_worker01"
+                              className="w-full bg-[#090C14] border border-slate-800 rounded-lg px-3 py-2 text-white font-mono"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <button
+                        type="submit"
+                        className="w-full py-2.5 px-4 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                      >
+                        <Plus className="w-4 h-4" />
+                        <span>
+                          {isFa
+                            ? 'افزودن این استخر به لیست همزمان پورت'
+                            : 'Attach Selected Pool to Port'}
+                        </span>
+                      </button>
+                    </form>
+
+                    {/* Right 6 cols: Add Custom Pool Manually (افزودن استخر به صورت دستی) */}
+                    <form
+                      onSubmit={handleAddManualPoolToPort}
+                      className="lg:col-span-6 bg-[#0E121E] border border-slate-800 rounded-xl p-5 space-y-4 flex flex-col justify-between"
+                    >
+                      <div className="space-y-3.5">
+                        <div>
+                          <h4 className="text-sm font-bold text-white">
+                            {isFa
+                              ? '۲. افزودن استخر جدید به صورت دستی (Custom Manual Pool)'
+                              : '2. Add Custom Mining Pool Manually'}
+                          </h4>
+                          <p className="text-xs text-slate-400 mt-0.5">
+                            {isFa
+                              ? 'مشخصات هر استخر دلخواه (نام، آدرس سرور، پورت و زیرحساب) را دستی وارد کنید تا همزمان روی این پورت فعال و در سیستم ذخیره شود.'
+                              : 'Manually enter any custom pool host, port, and subaccount to connect simultaneously and optionally save to your global catalog.'}
+                          </p>
+                        </div>
+
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                          <div className="sm:col-span-2">
+                            <label className="block text-slate-300 mb-1">
+                              {isFa ? 'نام دلخواه استخر *' : 'Pool Name *'}
+                            </label>
+                            <input
+                              type="text"
+                              value={manualPoolName}
+                              onChange={(e) => setManualPoolName(e.target.value)}
+                              placeholder={
+                                isFa ? 'مثلاً: ViaBTC سرور اختصاصی' : 'e.g. ViaBTC Custom / Private Pool'
+                              }
+                              className="w-full bg-[#090C14] border border-slate-800 rounded-lg px-3 py-2 text-white"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-slate-300 mb-1">
+                              {isFa ? 'ارز / الگوریتم' : 'Coin'}
+                            </label>
+                            <select
+                              value={manualPoolCoin}
+                              onChange={(e) => setManualPoolCoin(e.target.value)}
+                              className="w-full bg-[#090C14] border border-slate-800 rounded-lg px-3 py-2 text-white font-mono"
+                            >
+                              {Object.keys(COIN_ICON_MAP).map((c) => (
+                                <option key={c} value={c}>
+                                  {c}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                          <div className="col-span-2">
+                            <label className="block text-slate-300 mb-1">
+                              {isFa ? 'آدرس سرور استخر (Host / URL) *' : 'Stratum Host / IP *'}
+                            </label>
+                            <input
+                              type="text"
+                              dir="ltr"
+                              value={manualPoolHost}
+                              onChange={(e) => setManualPoolHost(e.target.value)}
+                              placeholder="btc.viabtc.io"
+                              className="w-full bg-[#090C14] border border-slate-800 rounded-lg px-3 py-2 text-white font-mono"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-slate-300 mb-1">
+                              {isFa ? 'پورت استخر *' : 'Port *'}
+                            </label>
+                            <input
+                              type="number"
+                              dir="ltr"
+                              value={manualPoolPort}
+                              onChange={(e) => setManualPoolPort(e.target.value)}
+                              placeholder="3333"
+                              className="w-full bg-[#090C14] border border-slate-800 rounded-lg px-3 py-2 text-white font-mono"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-slate-300 mb-1">
+                              {isFa ? 'پروتکل' : 'Protocol'}
+                            </label>
+                            <select
+                              value={manualPoolProtocol}
+                              onChange={(e) =>
+                                setManualPoolProtocol(e.target.value as 'TCP' | 'SSL')
+                              }
+                              className="w-full bg-[#090C14] border border-slate-800 rounded-lg px-3 py-2 text-white font-mono"
+                            >
+                              <option value="TCP">TCP</option>
+                              <option value="SSL">SSL</option>
+                            </select>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-slate-300 mb-1">
+                              {isFa ? 'سهم هش‌ریت همزمان (%)' : 'Simultaneous Share (%)'}
+                            </label>
+                            <input
+                              type="number"
+                              min={0}
+                              max={100}
+                              dir="ltr"
+                              value={manualPoolWeight}
+                              onChange={(e) => setManualPoolWeight(e.target.value)}
+                              className="w-full bg-[#090C14] border border-slate-800 rounded-lg px-3 py-2 text-white font-mono"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-slate-300 mb-1">
+                              {isFa ? 'زیرحساب / کیف‌پول در استخر' : 'Pool Subaccount / Wallet'}
+                            </label>
+                            <input
+                              type="text"
+                              dir="ltr"
+                              value={manualPoolSubaccount}
+                              onChange={(e) => setManualPoolSubaccount(e.target.value)}
+                              placeholder="my_pool_account01"
+                              className="w-full bg-[#090C14] border border-slate-800 rounded-lg px-3 py-2 text-white font-mono"
+                            />
+                          </div>
+                        </div>
+
+                        <label className="flex items-center gap-2 text-slate-300 cursor-pointer select-none">
+                          <input
+                            type="checkbox"
+                            checked={saveManualToCatalog}
+                            onChange={(e) => setSaveManualToCatalog(e.target.checked)}
+                            className="rounded accent-indigo-500"
+                          />
+                          <span>
+                            {isFa
+                              ? 'ذخیره دائمی این استخر دستی در بانک استخرهای سامانه برای استفاده در سایر پورت‌ها'
+                              : 'Save this manual pool to the persistent system catalog for all ports'}
+                          </span>
+                        </label>
+                      </div>
+
+                      <button
+                        type="submit"
+                        className="w-full py-2.5 px-4 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                      >
+                        <Plus className="w-4 h-4" />
+                        <span>
+                          {isFa
+                            ? 'افزودن دستی استخر و اتصال همزمان'
+                            : 'Add Custom Pool & Connect Simultaneously'}
+                        </span>
+                      </button>
+                    </form>
+                  </div>
                 </div>
               )}
 
@@ -3234,8 +4102,7 @@ export default function App() {
                   settingsCategory === 'https' ||
                   settingsCategory === 'session_ttl' ||
                   settingsCategory === 'tls_cert' ||
-                  settingsCategory === 'offline_webhook' ||
-                  settingsCategory === 'quick_pools') && (
+                  settingsCategory === 'offline_webhook') && (
                   <div className="space-y-4 text-xs">
                     <div>
                       <label className="block text-slate-300 mb-1.5">
@@ -3259,6 +4126,85 @@ export default function App() {
                         }}
                         className="w-full bg-[#090C14] border border-slate-800 rounded-lg px-3.5 py-2.5 text-white font-mono"
                       />
+                    </div>
+                  </div>
+                )}
+
+                {settingsCategory === 'quick_pools' && (
+                  <div className="space-y-4 text-xs">
+                    <div className="p-3.5 rounded-lg bg-[#0E121E] border border-slate-800 space-y-3">
+                      <div className="font-semibold text-white">
+                        {isFa
+                          ? 'افزودن دستی استخر جدید به بانک استخرهای سامانه'
+                          : 'Add New Custom Pool to System Catalog'}
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-4 gap-2.5">
+                        <input
+                          type="text"
+                          value={manualPoolName}
+                          onChange={(e) => setManualPoolName(e.target.value)}
+                          placeholder={isFa ? 'نام استخر (مثلاً ViaBTC VIP)' : 'Pool Name'}
+                          className="bg-[#090C14] border border-slate-800 rounded-lg px-3 py-2 text-white"
+                        />
+                        <input
+                          type="text"
+                          dir="ltr"
+                          value={manualPoolHost}
+                          onChange={(e) => setManualPoolHost(e.target.value)}
+                          placeholder="btc.viabtc.io"
+                          className="bg-[#090C14] border border-slate-800 rounded-lg px-3 py-2 text-white font-mono"
+                        />
+                        <input
+                          type="number"
+                          dir="ltr"
+                          value={manualPoolPort}
+                          onChange={(e) => setManualPoolPort(e.target.value)}
+                          placeholder="3333"
+                          className="bg-[#090C14] border border-slate-800 rounded-lg px-3 py-2 text-white font-mono"
+                        />
+                        <button
+                          type="button"
+                          onClick={handleAddManualPoolToPort}
+                          className="px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold cursor-pointer"
+                        >
+                          {isFa ? '+ ذخیره استخر دستی' : '+ Save Custom Pool'}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="max-h-64 overflow-y-auto border border-slate-800 rounded-lg divide-y divide-slate-800/70 bg-[#090C14]">
+                      {allPoolCatalog.map((pool) => (
+                        <div
+                          key={pool.id}
+                          className="px-3.5 py-2.5 flex items-center justify-between gap-2"
+                        >
+                          <div>
+                            <div className="font-semibold text-white">
+                              {isFa ? pool.nameFa : pool.name}{' '}
+                              <span className="text-indigo-400 font-mono text-[11px]">
+                                ({pool.coin} · {pool.algorithm})
+                              </span>
+                            </div>
+                            <div className="text-[11px] text-slate-400 font-mono" dir="ltr">
+                              TCP: {pool.host}:{pool.tcpPort}
+                              {pool.sslPort ? ` | SSL: ${pool.host}:${pool.sslPort}` : ''}
+                            </div>
+                          </div>
+                          {!pool.isBuiltIn ? (
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteCustomPool(pool.id)}
+                              className="px-2.5 py-1 rounded bg-rose-600/20 hover:bg-rose-600/40 text-rose-300 text-xs cursor-pointer"
+                            >
+                              {isFa ? 'حذف' : 'Delete'}
+                            </button>
+                          ) : (
+                            <span className="text-[11px] text-slate-500">
+                              {isFa ? 'استخر رسمی پیش‌فرض' : 'Built-in'}
+                            </span>
+                          )}
+                        </div>
+                      ))}
                     </div>
                   </div>
                 )}
@@ -3291,7 +4237,7 @@ export default function App() {
         <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-center justify-center p-4">
           <form
             onSubmit={handleSaveProxyForm}
-            className="bg-[#131726] border border-slate-700/80 rounded-xl max-w-lg w-full p-6 space-y-4 shadow-2xl text-xs"
+            className="bg-[#131726] border border-slate-700/80 rounded-xl max-w-xl w-full p-6 space-y-4 shadow-2xl text-xs max-h-[92vh] overflow-y-auto"
           >
             <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <h3 className="text-base font-bold text-white">
@@ -3300,8 +4246,8 @@ export default function App() {
                     ? `ویرایش پورت پروکسی [${editingProxy.listenPort}]`
                     : `Edit Proxy Port [${editingProxy.listenPort}]`
                   : isFa
-                  ? 'ایجاد پورت پروکسی جدید'
-                  : 'Create New Pool Proxy Port'}
+                  ? 'ایجاد پورت پروکسی جدید (پشتیبانی از چند استخر همزمان)'
+                  : 'Create New Multi-Pool Proxy Port'}
               </h3>
               <button
                 type="button"
@@ -3313,6 +4259,52 @@ export default function App() {
             </div>
 
             <div className="grid grid-cols-2 gap-3.5">
+              {/* Quick Preset Selector for Famous & Saved Pools */}
+              <div className="col-span-2 bg-[#0D111C] border border-slate-800 rounded-lg p-3 space-y-2">
+                <label className="block text-indigo-300 font-semibold">
+                  {isFa
+                    ? 'انتخاب سریع از استخرهای معروف (ViaBTC, F2Pool, AntPool, Binance...) یا استخرهای دستی:'
+                    : 'Quick Fill from Famous Pools (ViaBTC, F2Pool, AntPool, Binance...) or Custom Pools:'}
+                </label>
+                <select
+                  onChange={(e) => {
+                    const found = allPoolCatalog.find((p) => p.id === e.target.value);
+                    if (found) {
+                      setFormCoin(found.coin);
+                      setFormAlgorithm(found.algorithm);
+                      setFormTargetPool(found.host);
+                      setFormTargetPort(
+                        String(
+                          formProtocol === 'SSL' && found.sslPort
+                            ? found.sslPort
+                            : found.tcpPort
+                        )
+                      );
+                      if (!editingProxy) {
+                        setFormLabel(
+                          isFa
+                            ? `خط ${found.nameFa}`
+                            : `${found.name} Line`
+                        );
+                      }
+                    }
+                  }}
+                  defaultValue=""
+                  className="w-full bg-[#090C14] border border-slate-800 rounded-lg px-3 py-2 text-white"
+                >
+                  <option value="" disabled>
+                    {isFa
+                      ? '— یک استخر معروف را برای پر شدن خودکار انتخاب کنید یا در پایین دستی بنویسید —'
+                      : '— Select a famous pool preset or type manually below —'}
+                  </option>
+                  {allPoolCatalog.map((pool) => (
+                    <option key={pool.id} value={pool.id}>
+                      {isFa ? pool.nameFa : pool.name} — {pool.host}:{pool.tcpPort} ({pool.coin})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
               <div>
                 <label className="block text-slate-300 mb-1">
                   {isFa ? 'ارز دیجیتال' : 'Coin'}
@@ -3381,19 +4373,20 @@ export default function App() {
               </div>
               <div>
                 <label className="block text-slate-300 mb-1">
-                  {isFa ? 'آدرس استخر مقصد' : 'Upstream Pool Host'}
+                  {isFa ? 'آدرس استخر اول (دستی یا انتخابی)' : 'Primary Pool Host (Manual/Preset)'}
                 </label>
                 <input
                   type="text"
                   dir="ltr"
                   value={formTargetPool}
                   onChange={(e) => setFormTargetPool(e.target.value)}
+                  placeholder="btc.viabtc.io"
                   className="w-full bg-[#090C14] border border-slate-800 rounded-lg px-3 py-2 text-white font-mono"
                 />
               </div>
               <div>
                 <label className="block text-slate-300 mb-1">
-                  {isFa ? 'پورت استخر مقصد' : 'Upstream Port'}
+                  {isFa ? 'پورت استخر اول' : 'Primary Pool Port'}
                 </label>
                 <input
                   type="number"
@@ -3402,6 +4395,41 @@ export default function App() {
                   onChange={(e) => setFormTargetPort(e.target.value)}
                   className="w-full bg-[#090C14] border border-slate-800 rounded-lg px-3 py-2 text-white font-mono"
                 />
+              </div>
+              <div>
+                <label className="block text-slate-300 mb-1">
+                  {isFa ? 'استخر دوم همزمان / بکاپ (Host:Port)' : 'Secondary Simultaneous / Backup Pool'}
+                </label>
+                <input
+                  type="text"
+                  dir="ltr"
+                  value={formBackupPool}
+                  onChange={(e) => setFormBackupPool(e.target.value)}
+                  placeholder="btc.f2pool.com:1314"
+                  className="w-full bg-[#090C14] border border-slate-800 rounded-lg px-3 py-2 text-white font-mono"
+                />
+              </div>
+              <div>
+                <label className="block text-slate-300 mb-1">
+                  {isFa ? 'حالت چند استخری همزمان' : 'Multi-Pool Routing Mode'}
+                </label>
+                <select
+                  value={formMultiPoolStrategy}
+                  onChange={(e) =>
+                    setFormMultiPoolStrategy(e.target.value as MultiPoolStrategy)
+                  }
+                  className="w-full bg-[#090C14] border border-slate-800 rounded-lg px-3 py-2 text-white"
+                >
+                  <option value="load_balance">
+                    {isFa ? 'توزیع بار همزمان درصدی (Load Balance)' : 'Load Balance (%)'}
+                  </option>
+                  <option value="simultaneous_multi">
+                    {isFa ? 'اتصال همزمان چندمسیره (Simultaneous)' : 'Simultaneous Multi-Pool'}
+                  </option>
+                  <option value="priority_failover">
+                    {isFa ? 'اولویت‌بندی و سوئیچ بکاپ (Failover)' : 'Priority Failover'}
+                  </option>
+                </select>
               </div>
               <div>
                 <label className="block text-slate-300 mb-1">

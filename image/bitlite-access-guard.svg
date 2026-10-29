@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 320" width="100%" height="100%">
+  <defs>
+    <linearGradient id="guardBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0B0E17" />
+      <stop offset="100%" stop-color="#141A2E" />
+    </linearGradient>
+  </defs>
+
+  <rect width="1100" height="320" rx="16" fill="url(#guardBg)" stroke="#1E293B" stroke-width="2" />
+
+  <!-- Header -->
+  <rect x="24" y="20" width="1052" height="48" rx="10" fill="#151C30" stroke="#334155" />
+  <circle cx="48" cy="44" r="7" fill="#10B981" />
+  <text x="68" y="49" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="14" font-weight="700" fill="#F8FAFC">
+    Device-Level Access Control Guard — Identity Format: Wallet.Worker.Device
+  </text>
+  <rect x="890" y="30" width="170" height="28" rx="6" fill="#064E3B" stroke="#10B981" />
+  <text x="975" y="48" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="700" fill="#34D399" text-anchor="middle">STRICT MODE: ACTIVE</text>
+
+  <!-- Table Header -->
+  <rect x="24" y="84" width="1052" height="30" rx="6" fill="#0F1422" />
+  <text x="42" y="103" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="600" fill="#64748B">DEVICE IDENTITY (WALLET.WORKER.DEVICE)</text>
+  <text x="370" y="103" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="600" fill="#64748B">STATUS</text>
+  <text x="510" y="103" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="600" fill="#64748B">DEVICE QUOTA</text>
+  <text x="650" y="103" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="600" fill="#64748B">CUSTOMER QUOTA</text>
+  <text x="810" y="103" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="600" fill="#64748B">HASHRATE</text>
+  <text x="945" y="103" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="600" fill="#64748B">INSTANT ACTION</text>
+
+  <!-- Row 1 -->
+  <rect x="24" y="122" width="1052" height="52" rx="8" fill="#13192B" stroke="#1E293B" />
+  <text x="42" y="145" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="700" fill="#F8FAFC">wallet1.worker1.device101</text>
+  <text x="42" y="162" font-family="IBM Plex Mono, monospace" font-size="10" fill="#64748B">IP: 223.104.238.124 • Antminer S21 Pro</text>
+  <rect x="370" y="135" width="96" height="24" rx="6" fill="#064E3B" stroke="#10B981" />
+  <text x="418" y="151" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="700" fill="#34D399" text-anchor="middle">APPROVED</text>
+  <text x="510" y="152" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="#E2E8F0">1 / 2 Sessions</text>
+  <text x="650" y="152" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="#38BDF8">3 / 5 Paid Plan</text>
+  <text x="810" y="152" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="700" fill="#10B981">235.19 TH/s</text>
+  <rect x="945" y="135" width="56" height="24" rx="5" fill="#F59E0B" fill-opacity="0.2" stroke="#F59E0B" />
+  <text x="973" y="151" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="10" font-weight="600" fill="#FBBF24" text-anchor="middle">Disable</text>
+  <rect x="1008" y="135" width="54" height="24" rx="5" fill="#EF4444" fill-opacity="0.2" stroke="#EF4444" />
+  <text x="1035" y="151" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="10" font-weight="600" fill="#F87171" text-anchor="middle">Block</text>
+
+  <!-- Row 2 -->
+  <rect x="24" y="182" width="1052" height="52" rx="8" fill="#13192B" stroke="#1E293B" />
+  <text x="42" y="205" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="700" fill="#F8FAFC">wallet2.workerA.device205</text>
+  <text x="42" y="222" font-family="IBM Plex Mono, monospace" font-size="10" fill="#64748B">IP: 103.88.41.19 • New Connection Request</text>
+  <rect x="370" y="195" width="96" height="24" rx="6" fill="#78350F" stroke="#F59E0B" />
+  <text x="418" y="211" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="700" fill="#FBBF24" text-anchor="middle">PENDING</text>
+  <text x="510" y="212" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="#94A3B8">0 / 1 Sessions</text>
+  <text x="650" y="212" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="#FBBF24">Awaiting Tier</text>
+  <text x="810" y="212" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="#64748B">Held at Gate</text>
+  <rect x="945" y="195" width="56" height="24" rx="5" fill="#10B981" />
+  <text x="973" y="211" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="10" font-weight="700" fill="#0B0E17" text-anchor="middle">Approve</text>
+  <rect x="1008" y="195" width="54" height="24" rx="5" fill="#EF4444" fill-opacity="0.2" stroke="#EF4444" />
+  <text x="1035" y="211" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="10" font-weight="600" fill="#F87171" text-anchor="middle">Reject</text>
+
+  <!-- Row 3 -->
+  <rect x="24" y="242" width="1052" height="52" rx="8" fill="#1A121B" stroke="#7F1D1D" />
+  <text x="42" y="265" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="700" fill="#FCA5A5">wallet1.worker2.device104</text>
+  <text x="42" y="282" font-family="IBM Plex Mono, monospace" font-size="10" fill="#F87171">IP: 185.220.101.44 • Socket Terminated Immediately</text>
+  <rect x="370" y="255" width="96" height="24" rx="6" fill="#7F1D1D" stroke="#EF4444" />
+  <text x="418" y="271" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="700" fill="#FCA5A5" text-anchor="middle">BLOCKED</text>
+  <text x="510" y="272" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="#EF4444">0 / 0 Denied</text>
+  <text x="650" y="272" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="#94A3B8">3 / 5 Paid Plan</text>
+  <text x="810" y="272" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="#EF4444">0.00 TH/s</text>
+  <rect x="945" y="255" width="117" height="24" rx="5" fill="#1E293B" stroke="#475569" />
+  <text x="1003" y="271" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="10" font-weight="600" fill="#E2E8F0" text-anchor="middle">Unblock Device</text>
+</svg>

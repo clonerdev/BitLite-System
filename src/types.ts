@@ -2,6 +2,8 @@ export type Lang = 'fa' | 'en';
 
 export type WorkspaceMode = 'proxy' | 'access' | 'node' | 'algorithms' | 'cli';
 
+export type MultiPoolStrategy = 'load_balance' | 'simultaneous_multi' | 'priority_failover';
+
 export type SettingsCategory =
   | '2fa'
   | 'credentials'
@@ -64,6 +66,35 @@ export interface AccessControlStore {
   auditLogs: AccessAuditLogEntry[];
 }
 
+export interface PoolCatalogEntry {
+  id: string;
+  name: string;
+  nameFa: string;
+  coin: string;
+  algorithm: string;
+  host: string;
+  tcpPort: number;
+  sslPort?: number;
+  regionEn: string;
+  regionFa: string;
+  isBuiltIn: boolean;
+}
+
+export interface UpstreamPoolTarget {
+  id: string;
+  poolName: string;
+  host: string;
+  port: number;
+  protocol: 'TCP' | 'SSL';
+  weightPercent: number;
+  workerSubaccount?: string;
+  status: 'connected' | 'standby' | 'unreachable';
+  latencyMs: number;
+  activeHashrate: number;
+  acceptedShares: number;
+  enabled: boolean;
+}
+
 export interface SharePoint {
   time: string;
   validHashrate: number;
@@ -119,6 +150,8 @@ export interface ProxyPort {
   targetPool: string;
   targetPort: number;
   backupPool: string;
+  multiPoolStrategy: MultiPoolStrategy;
+  upstreamPools: UpstreamPoolTarget[];
   feeRatePercent: number;
   feeWallet: string;
   feeWorkerName: string;

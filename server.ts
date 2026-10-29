@@ -885,6 +885,80 @@ async function startServer() {
     return res.json({ ok: true, store });
   });
 
+  // Persistent Custom Pools Catalog (data/custom-pools.json)
+  const CUSTOM_POOLS_PATH = path.join(DATA_DIR, 'custom-pools.json');
+
+  const loadCustomPools = () => {
+    try {
+      if (fs.existsSync(CUSTOM_POOLS_PATH)) {
+        return JSON.parse(fs.readFileSync(CUSTOM_POOLS_PATH, 'utf-8'));
+      }
+    } catch (err) {
+      console.error('[BitLite v1.0.0] Failed to read custom-pools.json:', err);
+    }
+    return [];
+  };
+
+  const saveCustomPools = (pools: unknown[]) => {
+    try {
+      if (!fs.existsSync(DATA_DIR)) {
+        fs.mkdirSync(DATA_DIR, { recursive: true });
+      }
+      fs.writeFileSync(CUSTOM_POOLS_PATH, JSON.stringify(pools, null, 2), 'utf-8');
+    } catch (err) {
+      console.error('[BitLite v1.0.0] Failed to save custom-pools.json:', err);
+    }
+  };
+
+  let customPools = loadCustomPools();
+
+  app.get('/api/pools/custom', (_req, res) => {
+    res.json({ pools: customPools });
+  });
+
+  app.post('/api/pools/custom', (req, res) => {
+    const name = String(req.body?.name || '').trim();
+    const nameFa = String(req.body?.nameFa || name).trim();
+    const coin = String(req.body?.coin || 'BTC').trim();
+    const algorithm = String(req.body?.algorithm || 'SHA256').trim();
+    const host = String(req.body?.host || '').trim();
+    const tcpPort = Math.max(1, Math.min(65535, Number(req.body?.tcpPort) || 3333));
+    const sslPort = req.body?.sslPort
+      ? Math.max(1, Math.min(65535, Number(req.body?.sslPort)))
+      : undefined;
+    const regionEn = String(req.body?.regionEn || 'Custom Endpoint').trim();
+    const regionFa = String(req.body?.regionFa || 'استخر دستی اختصاصی').trim();
+
+    if (!name || !host) {
+      return res.status(400).json({ error: 'Pool name and host are required' });
+    }
+
+    const newPool = {
+      id: `custom-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      name,
+      nameFa,
+      coin,
+      algorithm,
+      host,
+      tcpPort,
+      sslPort,
+      regionEn,
+      regionFa,
+      isBuiltIn: false,
+    };
+
+    customPools = [newPool, ...customPools];
+    saveCustomPools(customPools);
+    return res.json({ ok: true, pool: newPool, pools: customPools });
+  });
+
+  app.delete('/api/pools/custom/:id', (req, res) => {
+    const poolId = String(req.params.id || '');
+    customPools = customPools.filter((p: { id: string }) => p.id !== poolId);
+    saveCustomPools(customPools);
+    return res.json({ ok: true, pools: customPools });
+  });
+
   // Mount Vite middleware in development or static dist in production
   const isProd = process.env.NODE_ENV === 'production' && fs.existsSync(path.resolve(process.cwd(), 'dist'));
   if (!isProd) {

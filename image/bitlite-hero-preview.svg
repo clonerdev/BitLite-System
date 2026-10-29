@@ -1,0 +1,215 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 660" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0B0E17" />
+      <stop offset="100%" stop-color="#111625" />
+    </linearGradient>
+    <linearGradient id="cardGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#151B2B" />
+      <stop offset="100%" stop-color="#0F1420" />
+    </linearGradient>
+    <linearGradient id="chartFill" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#10B981" stop-opacity="0.32" />
+      <stop offset="100%" stop-color="#10B981" stop-opacity="0.0" />
+    </linearGradient>
+    <linearGradient id="indigoGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#8B5CF6" />
+    </linearGradient>
+  </defs>
+
+  <!-- Window Frame -->
+  <rect width="1200" height="660" rx="16" fill="url(#bgGrad)" stroke="#1E293B" stroke-width="2" />
+
+  <!-- Top Navigation Bar -->
+  <rect x="2" y="2" width="1196" height="58" rx="14" fill="#121726" />
+  <line x1="0" y1="60" x2="1200" y2="60" stroke="#1E293B" stroke-width="1.5" />
+
+  <!-- Window Controls -->
+  <circle cx="26" cy="31" r="6" fill="#EF4444" />
+  <circle cx="46" cy="31" r="6" fill="#F59E0B" />
+  <circle cx="66" cy="31" r="6" fill="#10B981" />
+
+  <!-- Brand Logo & Name -->
+  <rect x="92" y="15" width="32" height="32" rx="8" fill="#F59E0B" fill-opacity="0.15" stroke="#F59E0B" stroke-opacity="0.4" />
+  <text x="108" y="37" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="18" font-weight="700" fill="#F59E0B" text-anchor="middle">₿</text>
+  <text x="136" y="29" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="15" font-weight="700" fill="#F8FAFC">BitLite System</text>
+  <text x="136" y="45" font-family="IBM Plex Mono, monospace" font-size="10" fill="#64748B">v1.0.0 • Multi-Pool Stratum Proxy &amp; Access Guard</text>
+
+  <!-- Navigation Tabs -->
+  <rect x="420" y="14" width="115" height="34" rx="8" fill="#6366F1" />
+  <text x="477" y="35" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="12" font-weight="600" fill="#FFFFFF" text-anchor="middle">Pool Proxy (6)</text>
+
+  <rect x="543" y="14" width="140" height="34" rx="8" fill="#1E293B" stroke="#334155" />
+  <text x="613" y="35" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="12" font-weight="600" fill="#A5B4FC" text-anchor="middle">Access Control Guard</text>
+
+  <rect x="691" y="14" width="115" height="34" rx="8" fill="#1E293B" />
+  <text x="748" y="35" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="12" font-weight="500" fill="#94A3B8" text-anchor="middle">Pool Nodes (3)</text>
+
+  <rect x="814" y="14" width="120" height="34" rx="8" fill="#1E293B" />
+  <text x="874" y="35" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="12" font-weight="500" fill="#94A3B8" text-anchor="middle">22+ Algorithms</text>
+
+  <!-- Right Status Indicators -->
+  <rect x="1030" y="16" width="150" height="30" rx="8" fill="#064E3B" fill-opacity="0.4" stroke="#10B981" stroke-opacity="0.4" />
+  <circle cx="1048" cy="31" r="4.5" fill="#10B981" />
+  <text x="1060" y="35" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" fill="#34D399">GUARD: STRICT</text>
+
+  <!-- Left Sidebar: Proxy Ports -->
+  <rect x="16" y="76" width="250" height="568" rx="12" fill="url(#cardGrad)" stroke="#1E293B" />
+  <text x="32" y="102" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="12" font-weight="700" fill="#94A3B8">ACTIVE PROXY LINES (6)</text>
+  <rect x="196" y="86" width="56" height="22" rx="6" fill="#6366F1" />
+  <text x="224" y="101" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="10" font-weight="600" fill="#FFFFFF" text-anchor="middle">+ Port</text>
+
+  <!-- Port Item 1 (Selected) -->
+  <rect x="26" y="116" width="230" height="86" rx="10" fill="#1E253B" stroke="#6366F1" stroke-width="1.5" />
+  <circle cx="46" cy="138" r="12" fill="#F59E0B" fill-opacity="0.2" />
+  <text x="46" y="143" font-family="Arial" font-size="13" font-weight="700" fill="#F59E0B" text-anchor="middle">₿</text>
+  <text x="66" y="136" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="13" font-weight="700" fill="#F8FAFC">BTC Multi-Pool Cluster</text>
+  <text x="66" y="151" font-family="IBM Plex Mono, monospace" font-size="10" fill="#818CF8">Port :2001 • TCP • 3 Pools Active</text>
+  <text x="36" y="176" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="700" fill="#10B981">21.98 PH/s</text>
+  <text x="150" y="176" font-family="IBM Plex Mono, monospace" font-size="11" fill="#94A3B8">272 / 280 ASICs</text>
+  <text x="36" y="193" font-family="IBM Plex Mono, monospace" font-size="10" fill="#F59E0B">ViaBTC 30% + F2Pool 55% + AntPool 15%</text>
+
+  <!-- Port Item 2 -->
+  <rect x="26" y="212" width="230" height="74" rx="10" fill="#131826" stroke="#1E293B" />
+  <circle cx="46" cy="234" r="12" fill="#38BDF8" fill-opacity="0.2" />
+  <text x="46" y="239" font-family="Arial" font-size="13" font-weight="700" fill="#38BDF8" text-anchor="middle">Ł</text>
+  <text x="66" y="233" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="13" font-weight="600" fill="#E2E8F0">LTC+DOGE ViaBTC Line</text>
+  <text x="66" y="248" font-family="IBM Plex Mono, monospace" font-size="10" fill="#64748B">Port :3335 • SSL • Simultaneous</text>
+  <text x="36" y="272" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="#10B981">4.82 TH/s</text>
+  <text x="155" y="272" font-family="IBM Plex Mono, monospace" font-size="11" fill="#64748B">94 / 96 ASICs</text>
+
+  <!-- Port Item 3 -->
+  <rect x="26" y="296" width="230" height="74" rx="10" fill="#131826" stroke="#1E293B" />
+  <circle cx="46" cy="318" r="12" fill="#2DD4BF" fill-opacity="0.2" />
+  <text x="46" y="323" font-family="Arial" font-size="12" font-weight="700" fill="#2DD4BF" text-anchor="middle">K</text>
+  <text x="66" y="317" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="13" font-weight="600" fill="#E2E8F0">KASPA KS3 BLC Tunnel</text>
+  <text x="66" y="332" font-family="IBM Plex Mono, monospace" font-size="10" fill="#64748B">Port :4444 • BLC Encrypted</text>
+  <text x="36" y="356" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="#10B981">1.64 PH/s</text>
+  <text x="155" y="356" font-family="IBM Plex Mono, monospace" font-size="11" fill="#64748B">61 / 62 ASICs</text>
+
+  <!-- Port Item 4 -->
+  <rect x="26" y="380" width="230" height="74" rx="10" fill="#131826" stroke="#1E293B" />
+  <circle cx="46" cy="402" r="12" fill="#A855F7" fill-opacity="0.2" />
+  <text x="46" y="407" font-family="Arial" font-size="12" font-weight="700" fill="#A855F7" text-anchor="middle">E</text>
+  <text x="66" y="401" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="13" font-weight="600" fill="#E2E8F0">ETC+ZIL Dual Mining</text>
+  <text x="66" y="416" font-family="IBM Plex Mono, monospace" font-size="10" fill="#64748B">Port :5555 • TCP • E9PRO Opt</text>
+  <text x="36" y="440" font-family="IBM Plex Mono, monospace" font-size="12" font-weight="600" fill="#10B981">412.5 GH/s</text>
+  <text x="155" y="440" font-family="IBM Plex Mono, monospace" font-size="11" fill="#64748B">118 / 120 ASICs</text>
+
+  <!-- Server Resource Box in Sidebar -->
+  <rect x="26" y="472" width="230" height="156" rx="10" fill="#0B0E17" stroke="#1E293B" />
+  <text x="38" y="495" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" fill="#94A3B8">SERVER TELEMETRY</text>
+  <text x="38" y="518" font-family="IBM Plex Mono, monospace" font-size="11" fill="#64748B">Kernel TCP Congestion:</text>
+  <text x="195" y="518" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" fill="#10B981">BBR2</text>
+  <text x="38" y="540" font-family="IBM Plex Mono, monospace" font-size="11" fill="#64748B">Open File Limit:</text>
+  <text x="165" y="540" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" fill="#E2E8F0">1,048,576</text>
+  <text x="38" y="562" font-family="IBM Plex Mono, monospace" font-size="11" fill="#64748B">Custom Pools Saved:</text>
+  <text x="195" y="562" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" fill="#38BDF8">17 + Custom</text>
+  <text x="38" y="584" font-family="IBM Plex Mono, monospace" font-size="11" fill="#64748B">Hot DevFee Rate:</text>
+  <text x="195" y="584" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" fill="#A5B4FC">1.16%</text>
+  <text x="38" y="608" font-family="IBM Plex Mono, monospace" font-size="10" fill="#10B981">● systemd: bitliteservice active</text>
+
+  <!-- Main Content Area -->
+  <!-- Top Metric Cards -->
+  <rect x="282" y="76" width="215" height="92" rx="12" fill="url(#cardGrad)" stroke="#1E293B" />
+  <text x="300" y="100" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="11" fill="#94A3B8">VALID POOL HASHRATE (15M)</text>
+  <text x="300" y="132" font-family="IBM Plex Mono, monospace" font-size="26" font-weight="700" fill="#10B981">21.98 PH/s</text>
+  <text x="300" y="153" font-family="IBM Plex Mono, monospace" font-size="11" fill="#64748B">24h Avg: 25.48 PH/s • 0% Reject</text>
+
+  <rect x="509" y="76" width="215" height="92" rx="12" fill="url(#cardGrad)" stroke="#1E293B" />
+  <text x="527" y="100" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="11" fill="#94A3B8">SIMULTANEOUS POOLS</text>
+  <text x="527" y="132" font-family="IBM Plex Mono, monospace" font-size="24" font-weight="700" fill="#38BDF8">3 Active Pools</text>
+  <text x="527" y="153" font-family="IBM Plex Mono, monospace" font-size="11" fill="#F59E0B">Load Balance % (55 / 30 / 15)</text>
+
+  <rect x="736" y="76" width="215" height="92" rx="12" fill="url(#cardGrad)" stroke="#1E293B" />
+  <text x="754" y="100" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="11" fill="#94A3B8">HOT FEE RATE (DEVFEE)</text>
+  <text x="754" y="132" font-family="IBM Plex Mono, monospace" font-size="26" font-weight="700" fill="#A5B4FC">1.16%</text>
+  <text x="754" y="153" font-family="IBM Plex Mono, monospace" font-size="11" fill="#64748B">218.92 TH/s → bitlite_vault</text>
+
+  <rect x="963" y="76" width="221" height="92" rx="12" fill="url(#cardGrad)" stroke="#1E293B" />
+  <text x="981" y="100" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="11" fill="#94A3B8">AUTHORIZED DEVICES</text>
+  <text x="981" y="132" font-family="IBM Plex Mono, monospace" font-size="26" font-weight="700" fill="#F8FAFC">272 <tspan font-size="15" fill="#64748B">/ 280</tspan></text>
+  <text x="981" y="153" font-family="IBM Plex Mono, monospace" font-size="11" fill="#34D399">Wallet.Worker.Device Guard ON</text>
+
+  <!-- Telemetry Chart Card -->
+  <rect x="282" y="180" width="902" height="175" rx="12" fill="url(#cardGrad)" stroke="#1E293B" />
+  <text x="302" y="206" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="13" font-weight="700" fill="#F8FAFC">Real-Time Stratum Hashrate &amp; Multi-Pool Share Distribution</text>
+  <circle cx="880" cy="202" r="5" fill="#10B981" />
+  <text x="892" y="206" font-family="IBM Plex Mono, monospace" font-size="11" fill="#94A3B8">Valid Hashrate</text>
+  <circle cx="995" cy="202" r="5" fill="#6366F1" />
+  <text x="1007" y="206" font-family="IBM Plex Mono, monospace" font-size="11" fill="#94A3B8">Fee Hashrate</text>
+  <circle cx="1100" cy="202" r="5" fill="#F59E0B" />
+  <text x="1112" y="206" font-family="IBM Plex Mono, monospace" font-size="11" fill="#94A3B8">ViaBTC</text>
+
+  <!-- Chart Grid Lines -->
+  <line x1="302" y1="230" x2="1164" y2="230" stroke="#1E293B" stroke-dasharray="4 4" />
+  <line x1="302" y1="270" x2="1164" y2="270" stroke="#1E293B" stroke-dasharray="4 4" />
+  <line x1="302" y1="310" x2="1164" y2="310" stroke="#1E293B" stroke-dasharray="4 4" />
+
+  <!-- Hashrate Curve -->
+  <path d="M302,285 Q350,245 400,260 T500,248 T600,255 T700,235 T800,250 T900,238 T1000,245 T1100,230 L1164,236 L1164,335 L302,335 Z" fill="url(#chartFill)" />
+  <path d="M302,285 Q350,245 400,260 T500,248 T600,255 T700,235 T800,250 T900,238 T1000,245 T1100,230 L1164,236" fill="none" stroke="#10B981" stroke-width="2.5" />
+  <path d="M302,322 Q450,316 600,320 T900,317 T1164,319" fill="none" stroke="#6366F1" stroke-width="2" />
+
+  <!-- Multi-Pool Routing & Famous Pools Section -->
+  <rect x="282" y="368" width="902" height="276" rx="12" fill="url(#cardGrad)" stroke="#1E293B" />
+
+  <!-- Sub-Tabs -->
+  <rect x="300" y="382" width="130" height="30" rx="7" fill="#1E293B" />
+  <text x="365" y="401" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="11" font-weight="600" fill="#94A3B8" text-anchor="middle">Workers (280)</text>
+
+  <rect x="438" y="382" width="185" height="30" rx="7" fill="#F59E0B" />
+  <text x="530" y="401" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="11" font-weight="700" fill="#0B0E17" text-anchor="middle">Multi-Pool Routing (3 Pools)</text>
+
+  <rect x="631" y="382" width="120" height="30" rx="7" fill="#1E293B" />
+  <text x="691" y="401" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="11" font-weight="600" fill="#94A3B8" text-anchor="middle">Wallets (4)</text>
+
+  <rect x="759" y="382" width="130" height="30" rx="7" fill="#1E293B" />
+  <text x="824" y="401" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="11" font-weight="600" fill="#94A3B8" text-anchor="middle">+ Add Custom Pool</text>
+
+  <!-- Table Header -->
+  <rect x="300" y="424" width="866" height="28" rx="6" fill="#0B0E17" />
+  <text x="315" y="442" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="600" fill="#64748B">PRIORITY</text>
+  <text x="395" y="442" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="600" fill="#64748B">UPSTREAM POOL NAME</text>
+  <text x="575" y="442" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="600" fill="#64748B">STRATUM ENDPOINT</text>
+  <text x="775" y="442" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="600" fill="#64748B">WEIGHT (%)</text>
+  <text x="895" y="442" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="600" fill="#64748B">ROUTED HASHRATE</text>
+  <text x="1065" y="442" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="600" fill="#64748B">STATUS</text>
+
+  <!-- Pool Row 1: F2Pool -->
+  <rect x="300" y="460" width="866" height="48" rx="8" fill="#131929" stroke="#1E293B" />
+  <rect x="315" y="473" width="54" height="22" rx="5" fill="#F59E0B" fill-opacity="0.15" stroke="#F59E0B" stroke-opacity="0.4" />
+  <text x="342" y="488" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="700" fill="#FBBF24" text-anchor="middle">#1 PRI</text>
+  <text x="395" y="488" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="13" font-weight="700" fill="#F8FAFC">F2Pool BTC Primary</text>
+  <text x="575" y="488" font-family="IBM Plex Mono, monospace" font-size="12" fill="#38BDF8">btc.f2pool.com:1314</text>
+  <rect x="775" y="474" width="80" height="8" rx="4" fill="#1E293B" />
+  <rect x="775" y="474" width="44" height="8" rx="4" fill="#F59E0B" />
+  <text x="775" y="496" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="700" fill="#FBBF24">55% Share</text>
+  <text x="895" y="488" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="700" fill="#10B981">12.09 PH/s</text>
+  <text x="1065" y="488" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" fill="#34D399">● 28ms ONLINE</text>
+
+  <!-- Pool Row 2: ViaBTC -->
+  <rect x="300" y="516" width="866" height="48" rx="8" fill="#131929" stroke="#1E293B" />
+  <rect x="315" y="529" width="54" height="22" rx="5" fill="#6366F1" fill-opacity="0.15" stroke="#6366F1" stroke-opacity="0.4" />
+  <text x="342" y="544" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="700" fill="#818CF8" text-anchor="middle">#2 SIM</text>
+  <text x="395" y="544" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="13" font-weight="700" fill="#F8FAFC">ViaBTC Global Stratum</text>
+  <text x="575" y="544" font-family="IBM Plex Mono, monospace" font-size="12" fill="#38BDF8">btc.viabtc.io:3333</text>
+  <rect x="775" y="530" width="80" height="8" rx="4" fill="#1E293B" />
+  <rect x="775" y="530" width="24" height="8" rx="4" fill="#10B981" />
+  <text x="775" y="552" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="700" fill="#34D399">30% Share</text>
+  <text x="895" y="544" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="700" fill="#10B981">6.59 PH/s</text>
+  <text x="1065" y="544" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" fill="#34D399">● 34ms ONLINE</text>
+
+  <!-- Pool Row 3: AntPool -->
+  <rect x="300" y="572" width="866" height="48" rx="8" fill="#131929" stroke="#1E293B" />
+  <rect x="315" y="585" width="54" height="22" rx="5" fill="#6366F1" fill-opacity="0.15" stroke="#6366F1" stroke-opacity="0.4" />
+  <text x="342" y="600" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="700" fill="#818CF8" text-anchor="middle">#3 SIM</text>
+  <text x="395" y="600" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="13" font-weight="700" fill="#F8FAFC">AntPool Stratum Node</text>
+  <text x="575" y="600" font-family="IBM Plex Mono, monospace" font-size="12" fill="#38BDF8">stratum.antpool.com:3333</text>
+  <rect x="775" y="586" width="80" height="8" rx="4" fill="#1E293B" />
+  <rect x="775" y="586" width="12" height="8" rx="4" fill="#6366F1" />
+  <text x="775" y="608" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="700" fill="#A5B4FC">15% Share</text>
+  <text x="895" y="600" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="700" fill="#10B981">3.30 PH/s</text>
+  <text x="1065" y="600" font-family="IBM Plex Mono, monospace" font-size="11" font-weight="600" fill="#34D399">● 41ms ONLINE</text>
+</svg>

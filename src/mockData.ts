@@ -1,4 +1,247 @@
-import { ProxyPort, PoolNodeItem, AlgorithmSupport, SharePoint } from './types';
+import {
+  ProxyPort,
+  PoolNodeItem,
+  AlgorithmSupport,
+  SharePoint,
+  PoolCatalogEntry
+} from './types';
+
+export const FAMOUS_POOL_CATALOG: PoolCatalogEntry[] = [
+  {
+    id: 'viabtc-btc',
+    name: 'ViaBTC (BTC)',
+    nameFa: 'استخر ViaBTC (بیت‌کوین)',
+    coin: 'BTC',
+    algorithm: 'SHA256',
+    host: 'btc.viabtc.io',
+    tcpPort: 3333,
+    sslPort: 443,
+    regionEn: 'Global Anycast (Smart Routing)',
+    regionFa: 'جهانی (مسیریابی هوشمند)',
+    isBuiltIn: true
+  },
+  {
+    id: 'viabtc-ltc',
+    name: 'ViaBTC (LTC+DOGE+BEL)',
+    nameFa: 'استخر ViaBTC (لایت‌کوین + دوج + بلز)',
+    coin: 'LTC',
+    algorithm: 'SCRYPT',
+    host: 'ltc.viabtc.io',
+    tcpPort: 3333,
+    sslPort: 443,
+    regionEn: 'Global Anycast (Merged Mining)',
+    regionFa: 'جهانی (استخراج ترکیبی)',
+    isBuiltIn: true
+  },
+  {
+    id: 'viabtc-bch',
+    name: 'ViaBTC (BCH)',
+    nameFa: 'استخر ViaBTC (بیت‌کوین کش)',
+    coin: 'BCH',
+    algorithm: 'SHA256',
+    host: 'bch.viabtc.io',
+    tcpPort: 3333,
+    sslPort: 443,
+    regionEn: 'Global Anycast',
+    regionFa: 'جهانی',
+    isBuiltIn: true
+  },
+  {
+    id: 'viabtc-kas',
+    name: 'ViaBTC (KASPA)',
+    nameFa: 'استخر ViaBTC (کاسپا)',
+    coin: 'KAS(ks3)',
+    algorithm: 'KHEAVYHASH',
+    host: 'kas.viabtc.io',
+    tcpPort: 3333,
+    sslPort: 443,
+    regionEn: 'Global Anycast',
+    regionFa: 'جهانی',
+    isBuiltIn: true
+  },
+  {
+    id: 'viabtc-etc',
+    name: 'ViaBTC (ETC)',
+    nameFa: 'استخر ViaBTC (اتریوم کلاسیک)',
+    coin: 'ETC+ZIL',
+    algorithm: 'ETHASH',
+    host: 'etc.viabtc.io',
+    tcpPort: 3333,
+    sslPort: 443,
+    regionEn: 'Global Anycast',
+    regionFa: 'جهانی',
+    isBuiltIn: true
+  },
+  {
+    id: 'f2pool-btc',
+    name: 'F2Pool (BTC)',
+    nameFa: 'استخر F2Pool (بیت‌کوین)',
+    coin: 'BTC',
+    algorithm: 'SHA256',
+    host: 'btc.f2pool.com',
+    tcpPort: 1314,
+    sslPort: 3333,
+    regionEn: 'Global / Asia / EU / US',
+    regionFa: 'جهانی / آسیا / اروپا',
+    isBuiltIn: true
+  },
+  {
+    id: 'f2pool-ltc',
+    name: 'F2Pool (LTC+DOGE)',
+    nameFa: 'استخر F2Pool (لایت‌کوین)',
+    coin: 'LTC',
+    algorithm: 'SCRYPT',
+    host: 'ltc.f2pool.com',
+    tcpPort: 8888,
+    sslPort: 8889,
+    regionEn: 'Global / Asia / EU',
+    regionFa: 'جهانی / اروپا / آسیا',
+    isBuiltIn: true
+  },
+  {
+    id: 'antpool-btc',
+    name: 'AntPool (BTC)',
+    nameFa: 'استخر AntPool (بیت‌کوین)',
+    coin: 'BTC',
+    algorithm: 'SHA256',
+    host: 'stratum.antpool.com',
+    tcpPort: 3333,
+    sslPort: 443,
+    regionEn: 'Global Multi-Node',
+    regionFa: 'جهانی چندنودی',
+    isBuiltIn: true
+  },
+  {
+    id: 'binance-btc',
+    name: 'Binance Pool (BTC)',
+    nameFa: 'استخر Binance Pool (بیت‌کوین)',
+    coin: 'BTC',
+    algorithm: 'SHA256',
+    host: 'sha256.poolbinance.com',
+    tcpPort: 8888,
+    sslPort: 443,
+    regionEn: 'Global Edge Network',
+    regionFa: 'شبکه جهانی بایننس',
+    isBuiltIn: true
+  },
+  {
+    id: 'binance-ltc',
+    name: 'Binance Pool (LTC)',
+    nameFa: 'استخر Binance Pool (لایت‌کوین)',
+    coin: 'LTC',
+    algorithm: 'SCRYPT',
+    host: 'ltc.poolbinance.com',
+    tcpPort: 3333,
+    sslPort: 443,
+    regionEn: 'Global Edge Network',
+    regionFa: 'شبکه جهانی بایننس',
+    isBuiltIn: true
+  },
+  {
+    id: 'foundry-btc',
+    name: 'Foundry USA Pool (BTC)',
+    nameFa: 'استخر Foundry USA (بیت‌کوین)',
+    coin: 'BTC',
+    algorithm: 'SHA256',
+    host: 'btc.foundryusapool.com',
+    tcpPort: 3333,
+    sslPort: 25,
+    regionEn: 'North America / Global',
+    regionFa: 'آمریکای شمالی / جهانی',
+    isBuiltIn: true
+  },
+  {
+    id: 'spiderpool-btc',
+    name: 'SpiderPool (BTC)',
+    nameFa: 'استخر SpiderPool (بیت‌کوین)',
+    coin: 'BTC',
+    algorithm: 'SHA256',
+    host: 'btc.spiderpool.com',
+    tcpPort: 3333,
+    sslPort: 2309,
+    regionEn: 'Global / Asia / ME',
+    regionFa: 'جهانی / خاورمیانه / آسیا',
+    isBuiltIn: true
+  },
+  {
+    id: 'poolin-btc',
+    name: 'Poolin (BTC)',
+    nameFa: 'استخر Poolin (بیت‌کوین)',
+    coin: 'BTC',
+    algorithm: 'SHA256',
+    host: 'btc.ss.poolin.one',
+    tcpPort: 443,
+    sslPort: 700,
+    regionEn: 'Global Smart Stratum',
+    regionFa: 'جهانی',
+    isBuiltIn: true
+  },
+  {
+    id: 'emcd-btc',
+    name: 'EMCD Pool (BTC)',
+    nameFa: 'استخر EMCD (بیت‌کوین)',
+    coin: 'BTC',
+    algorithm: 'SHA256',
+    host: 'gate.emcd.io',
+    tcpPort: 3333,
+    sslPort: 443,
+    regionEn: 'EU / CIS / ME Low-Latency',
+    regionFa: 'اروپا و خاورمیانه (پینگ پایین)',
+    isBuiltIn: true
+  },
+  {
+    id: 'braiins-btc',
+    name: 'Braiins Pool / SlushPool (BTC)',
+    nameFa: 'استخر Braiins / SlushPool (بیت‌کوین)',
+    coin: 'BTC',
+    algorithm: 'SHA256',
+    host: 'stratum.braiins.com',
+    tcpPort: 3333,
+    sslPort: 3336,
+    regionEn: 'EU / US / Asia Stratum V2',
+    regionFa: 'اروپا / آمریکا / آسیا',
+    isBuiltIn: true
+  },
+  {
+    id: 'luxor-btc',
+    name: 'Luxor Pool (BTC)',
+    nameFa: 'استخر Luxor Tech (بیت‌کوین)',
+    coin: 'BTC',
+    algorithm: 'SHA256',
+    host: 'btc.global.luxor.tech',
+    tcpPort: 700,
+    sslPort: 443,
+    regionEn: 'Global Anycast',
+    regionFa: 'جهانی',
+    isBuiltIn: true
+  },
+  {
+    id: '2miners-etc',
+    name: '2Miners (ETC)',
+    nameFa: 'استخر 2Miners (اتریوم کلاسیک)',
+    coin: 'ETC+ZIL',
+    algorithm: 'ETHASH',
+    host: 'etc.2miners.com',
+    tcpPort: 1010,
+    sslPort: 11010,
+    regionEn: 'EU / US / Asia',
+    regionFa: 'اروپا / آمریکا / آسیا',
+    isBuiltIn: true
+  },
+  {
+    id: 'kryptex-kas',
+    name: 'Kryptex Pool (KASPA)',
+    nameFa: 'استخر Kryptex (کاسپا)',
+    coin: 'KAS(ks3)',
+    algorithm: 'KHEAVYHASH',
+    host: 'kas.kryptex.network',
+    tcpPort: 7777,
+    sslPort: 8888,
+    regionEn: 'EU / Global',
+    regionFa: 'اروپا / جهانی',
+    isBuiltIn: true
+  }
+];
 
 function buildSeries(baseHash: number, feePct: number, seedOffset: number): SharePoint[] {
   const points: SharePoint[] = [];
@@ -34,16 +277,75 @@ export const INITIAL_PROXIES: ProxyPort[] = [
   {
     id: 'btc-2001',
     coin: 'BTC',
-    labelEn: 'BTC Primary Pool Line',
-    labelFa: 'خط اصلی استخر BTC',
+    labelEn: 'BTC Multi-Pool Cluster',
+    labelFa: 'خط چند استخری همزمان BTC',
     algorithm: 'SHA256',
     unit: 'T',
     icon: '/image/icon-btc.png',
     listenPort: 2001,
     protocol: 'TCP',
-    targetPool: 'btc.f2pool.com',
-    targetPort: 1314,
-    backupPool: 'stratum.antpool.com:3333',
+    targetPool: 'btc.viabtc.io',
+    targetPort: 3333,
+    backupPool: 'btc.f2pool.com:1314',
+    multiPoolStrategy: 'load_balance',
+    upstreamPools: [
+      {
+        id: 'up-btc-viabtc',
+        poolName: 'ViaBTC (BTC)',
+        host: 'btc.viabtc.io',
+        port: 3333,
+        protocol: 'TCP',
+        weightPercent: 45,
+        workerSubaccount: 'viabtc_main01',
+        status: 'connected',
+        latencyMs: 38,
+        activeHashrate: 9891.18,
+        acceptedShares: 28410,
+        enabled: true
+      },
+      {
+        id: 'up-btc-f2pool',
+        poolName: 'F2Pool (BTC)',
+        host: 'btc.f2pool.com',
+        port: 1314,
+        protocol: 'TCP',
+        weightPercent: 35,
+        workerSubaccount: 'f2pool_vault01',
+        status: 'connected',
+        latencyMs: 54,
+        activeHashrate: 7693.14,
+        acceptedShares: 21120,
+        enabled: true
+      },
+      {
+        id: 'up-btc-antpool',
+        poolName: 'AntPool (BTC)',
+        host: 'stratum.antpool.com',
+        port: 443,
+        protocol: 'SSL',
+        weightPercent: 20,
+        workerSubaccount: 'antpool_sub01',
+        status: 'connected',
+        latencyMs: 61,
+        activeHashrate: 4396.08,
+        acceptedShares: 12490,
+        enabled: true
+      },
+      {
+        id: 'up-btc-binance',
+        poolName: 'Binance Pool (BTC)',
+        host: 'sha256.poolbinance.com',
+        port: 8888,
+        protocol: 'SSL',
+        weightPercent: 0,
+        workerSubaccount: 'binance_backup01',
+        status: 'standby',
+        latencyMs: 49,
+        activeHashrate: 0,
+        acceptedShares: 940,
+        enabled: true
+      }
+    ],
     feeRatePercent: 1.16,
     feeWallet: 'bitlite_vault.devfee',
     feeWorkerName: 'bitlite_sha256_fee',
@@ -80,7 +382,7 @@ export const INITIAL_PROXIES: ProxyPort[] = [
         disconnectCount: 4,
         feeRatePercent: 1.16,
         algorithm: 'SHA256',
-        latencyMs: 76,
+        latencyMs: 38,
         ip: '223.104.238.124',
         connections: 2,
         connectedAt: '2026-10-25 23:53:03',
@@ -88,10 +390,10 @@ export const INITIAL_PROXIES: ProxyPort[] = [
         lastJobAt: '2026-10-28 11:42:39',
         logs: [
           '[11:40:12] Stratum session authorized for bitlite_miner01.192x168x13x83 (cgminer/4.11.1)',
-          '[11:41:05] Upstream job 0x8fa3 received from btc.f2pool.com:1314 (latency 76ms)',
+          '[11:41:05] Multi-Pool Router active: ViaBTC (45%) + F2Pool (35%) + AntPool (20%)',
           '[11:41:38] DevFee cycle slice routed -> bitlite_vault.devfee (1.16% ratio)',
-          '[11:42:04] Share accepted (diff 281.47T) — valid shares: 22,660',
-          '[11:42:39] Extranonce2 subscription verified, TCP keepalive nominal'
+          '[11:42:04] Share accepted by btc.viabtc.io:3333 (diff 281.47T) — valid shares: 22,660',
+          '[11:42:39] Extranonce2 subscription verified across 3 simultaneous pool sockets'
         ]
       },
       {
@@ -116,7 +418,7 @@ export const INITIAL_PROXIES: ProxyPort[] = [
         disconnectCount: 1,
         feeRatePercent: 1.16,
         algorithm: 'SHA256',
-        latencyMs: 68,
+        latencyMs: 42,
         ip: '223.104.238.125',
         connections: 1,
         connectedAt: '2026-10-26 02:14:19',
@@ -124,8 +426,8 @@ export const INITIAL_PROXIES: ProxyPort[] = [
         lastJobAt: '2026-10-28 11:42:39',
         logs: [
           '[11:39:02] Stratum difficulty adjusted to 281.47T',
-          '[11:41:14] Share accepted by upstream pool (68ms)',
-          '[11:42:31] Share accepted by upstream pool (65ms)'
+          '[11:41:14] Share accepted by btc.viabtc.io:3333 (42ms)',
+          '[11:42:31] Share accepted by btc.f2pool.com:1314 (54ms)'
         ]
       },
       {
@@ -200,8 +502,8 @@ export const INITIAL_PROXIES: ProxyPort[] = [
   {
     id: 'forward-5555',
     coin: 'DIRECT',
-    labelEn: 'Direct TCP/SSL Passthrough',
-    labelFa: 'فوروارد مستقیم TCP/SSL بدون کارمزد',
+    labelEn: 'Direct TCP/SSL Multi-Pool Passthrough',
+    labelFa: 'فوروارد مستقیم چند استخری بدون کارمزد',
     algorithm: 'PASSTHROUGH',
     unit: 'T',
     icon: '/image/merge.png',
@@ -210,6 +512,37 @@ export const INITIAL_PROXIES: ProxyPort[] = [
     targetPool: 'stratum.antpool.com',
     targetPort: 443,
     backupPool: 'btc.viabtc.io:3333',
+    multiPoolStrategy: 'simultaneous_multi',
+    upstreamPools: [
+      {
+        id: 'up-dir-antpool',
+        poolName: 'AntPool (BTC)',
+        host: 'stratum.antpool.com',
+        port: 443,
+        protocol: 'SSL',
+        weightPercent: 50,
+        workerSubaccount: 'antpool_vip_sub01',
+        status: 'connected',
+        latencyMs: 39,
+        activeHashrate: 4210.25,
+        acceptedShares: 14200,
+        enabled: true
+      },
+      {
+        id: 'up-dir-viabtc',
+        poolName: 'ViaBTC (BTC)',
+        host: 'btc.viabtc.io',
+        port: 443,
+        protocol: 'SSL',
+        weightPercent: 50,
+        workerSubaccount: 'viabtc_vip_sub01',
+        status: 'connected',
+        latencyMs: 36,
+        activeHashrate: 4210.25,
+        acceptedShares: 14180,
+        enabled: true
+      }
+    ],
     feeRatePercent: 0.0,
     feeWallet: 'N/A (Zero-Fee Passthrough)',
     feeWorkerName: 'passthrough',
@@ -253,7 +586,7 @@ export const INITIAL_PROXIES: ProxyPort[] = [
         lastShareAt: '2026-10-28 11:42:49',
         lastJobAt: '2026-10-28 11:42:50',
         logs: [
-          '[11:42:10] TLS 1.3 tunnel active — direct zero-fee stream forwarding to stratum.antpool.com:443'
+          '[11:42:10] Simultaneous TLS 1.3 stream forwarding -> AntPool (50%) & ViaBTC (50%)'
         ]
       }
     ]
@@ -271,6 +604,37 @@ export const INITIAL_PROXIES: ProxyPort[] = [
     targetPool: 'fb.f2pool.com',
     targetPort: 5300,
     backupPool: 'fb.antpool.com:3333',
+    multiPoolStrategy: 'priority_failover',
+    upstreamPools: [
+      {
+        id: 'up-fb-f2pool',
+        poolName: 'F2Pool (FB)',
+        host: 'fb.f2pool.com',
+        port: 5300,
+        protocol: 'SSL',
+        weightPercent: 70,
+        workerSubaccount: 'fractal_miner_01',
+        status: 'connected',
+        latencyMs: 48,
+        activeHashrate: 3584.56,
+        acceptedShares: 9840,
+        enabled: true
+      },
+      {
+        id: 'up-fb-antpool',
+        poolName: 'AntPool (FB)',
+        host: 'fb.antpool.com',
+        port: 3333,
+        protocol: 'TCP',
+        weightPercent: 30,
+        workerSubaccount: 'fractal_ant_01',
+        status: 'connected',
+        latencyMs: 55,
+        activeHashrate: 1536.24,
+        acceptedShares: 4120,
+        enabled: true
+      }
+    ],
     feeRatePercent: 1.5,
     feeWallet: 'bc1qbitlitefractalvault8899',
     feeWorkerName: 'bitlite_fb_fee',
@@ -332,6 +696,37 @@ export const INITIAL_PROXIES: ProxyPort[] = [
     targetPool: 'ltc.viabtc.io',
     targetPort: 3333,
     backupPool: 'ltc.f2pool.com:8888',
+    multiPoolStrategy: 'load_balance',
+    upstreamPools: [
+      {
+        id: 'up-ltc-viabtc',
+        poolName: 'ViaBTC (LTC+DOGE+BEL)',
+        host: 'ltc.viabtc.io',
+        port: 3333,
+        protocol: 'TCP',
+        weightPercent: 60,
+        workerSubaccount: 'scrypt_king_88',
+        status: 'connected',
+        latencyMs: 44,
+        activeHashrate: 489.84,
+        acceptedShares: 11230,
+        enabled: true
+      },
+      {
+        id: 'up-ltc-f2pool',
+        poolName: 'F2Pool (LTC+DOGE)',
+        host: 'ltc.f2pool.com',
+        port: 8888,
+        protocol: 'TCP',
+        weightPercent: 40,
+        workerSubaccount: 'scrypt_f2p_88',
+        status: 'connected',
+        latencyMs: 58,
+        activeHashrate: 326.56,
+        acceptedShares: 7480,
+        enabled: true
+      }
+    ],
     feeRatePercent: 1.0,
     feeWallet: 'ltc1qbitlitedevfeewallet01',
     feeWorkerName: 'bitlite_scrypt_fee',
@@ -368,14 +763,14 @@ export const INITIAL_PROXIES: ProxyPort[] = [
         disconnectCount: 1,
         feeRatePercent: 1.0,
         algorithm: 'SCRYPT',
-        latencyMs: 62,
+        latencyMs: 44,
         ip: '58.246.12.88',
         connections: 1,
         connectedAt: '2026-10-25 19:40:10',
         lastShareAt: '2026-10-28 11:42:22',
         lastJobAt: '2026-10-28 11:42:30',
         logs: [
-          '[11:42:22] BLC custom key encryption active — Scrypt AUXPOW share accepted'
+          '[11:42:22] BLC custom key encryption active — Scrypt AUXPOW share accepted on ViaBTC & F2Pool'
         ]
       }
     ]
@@ -390,9 +785,40 @@ export const INITIAL_PROXIES: ProxyPort[] = [
     icon: '/image/icon-kas(ks3).png',
     listenPort: 4001,
     protocol: 'SSL',
-    targetPool: 'kas.kryptex.network',
-    targetPort: 7777,
-    backupPool: 'kaspa.f2pool.com:1400',
+    targetPool: 'kas.viabtc.io',
+    targetPort: 3333,
+    backupPool: 'kas.kryptex.network:7777',
+    multiPoolStrategy: 'load_balance',
+    upstreamPools: [
+      {
+        id: 'up-kas-viabtc',
+        poolName: 'ViaBTC (KASPA)',
+        host: 'kas.viabtc.io',
+        port: 3333,
+        protocol: 'SSL',
+        weightPercent: 50,
+        workerSubaccount: 'kaspa_whale_01',
+        status: 'connected',
+        latencyMs: 39,
+        activeHashrate: 355.25,
+        acceptedShares: 4210,
+        enabled: true
+      },
+      {
+        id: 'up-kas-kryptex',
+        poolName: 'Kryptex Pool (KASPA)',
+        host: 'kas.kryptex.network',
+        port: 7777,
+        protocol: 'SSL',
+        weightPercent: 50,
+        workerSubaccount: 'kaspa_whale_01',
+        status: 'connected',
+        latencyMs: 41,
+        activeHashrate: 355.25,
+        acceptedShares: 4210,
+        enabled: true
+      }
+    ],
     feeRatePercent: 1.2,
     feeWallet: 'kaspa:qp9bitlitedevfee8823',
     feeWorkerName: 'bitlite_kas_fee',
@@ -451,9 +877,40 @@ export const INITIAL_PROXIES: ProxyPort[] = [
     icon: '/image/icon-etc+zil.png',
     listenPort: 4444,
     protocol: 'TCP',
-    targetPool: 'etc.f2pool.com',
-    targetPort: 8118,
-    backupPool: 'zil.bitlitepool.io:5000',
+    targetPool: 'etc.viabtc.io',
+    targetPort: 3333,
+    backupPool: 'etc.f2pool.com:8118',
+    multiPoolStrategy: 'load_balance',
+    upstreamPools: [
+      {
+        id: 'up-etc-viabtc',
+        poolName: 'ViaBTC (ETC)',
+        host: 'etc.viabtc.io',
+        port: 3333,
+        protocol: 'TCP',
+        weightPercent: 60,
+        workerSubaccount: '0x98B2...E41C',
+        status: 'connected',
+        latencyMs: 47,
+        activeHashrate: 119.04,
+        acceptedShares: 2472,
+        enabled: true
+      },
+      {
+        id: 'up-etc-2miners',
+        poolName: '2Miners (ETC)',
+        host: 'etc.2miners.com',
+        port: 1010,
+        protocol: 'TCP',
+        weightPercent: 40,
+        workerSubaccount: '0x98B2...E41C',
+        status: 'connected',
+        latencyMs: 52,
+        activeHashrate: 79.36,
+        acceptedShares: 1648,
+        enabled: true
+      }
+    ],
     feeRatePercent: 1.0,
     feeWallet: '0x71C9...89A2',
     feeWorkerName: 'bitlite_etczil_fee',
@@ -515,6 +972,23 @@ export const INITIAL_PROXIES: ProxyPort[] = [
     targetPool: 'aleo.f2pool.com',
     targetPort: 4420,
     backupPool: 'aleo.zk.work:10003',
+    multiPoolStrategy: 'priority_failover',
+    upstreamPools: [
+      {
+        id: 'up-aleo-f2pool',
+        poolName: 'F2Pool (ALEO)',
+        host: 'aleo.f2pool.com',
+        port: 4420,
+        protocol: 'SSL',
+        weightPercent: 100,
+        workerSubaccount: 'aleo_prover_01',
+        status: 'standby',
+        latencyMs: 65,
+        activeHashrate: 0,
+        acceptedShares: 0,
+        enabled: true
+      }
+    ],
     feeRatePercent: 1.0,
     feeWallet: 'aleo1bitlitedevfee098123',
     feeWorkerName: 'bitlite_aleo_fee',
