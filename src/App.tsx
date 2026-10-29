@@ -2341,24 +2341,24 @@ export default function App() {
                     label: isFa
                       ? 'اسکریپت نصب استاندارد لینوکس (x86_64)'
                       : 'Linux x86_64 Standard Installer',
-                    cmd: 'bash <(curl -s -L https://cdn.bitlitesystem.io/release/main/install.sh)'
+                    cmd: 'bash <(curl -s -L https://raw.githubusercontent.com/clonerdev/BitLite-System/main/install.sh)'
                   },
                   {
-                    key: 'mirror',
+                    key: 'git',
                     label: isFa
-                      ? 'آدرس میرور پرسرعت نصب (Mirror)'
-                      : 'High-Speed Mirror Installer',
-                    cmd: 'bash <(curl -s -L -k https://mirror.bitlitesystem.io/release/main/install.sh)'
+                      ? 'کلون و نصب مستقیم از مخزن گیت‌هاب (Git Clone)'
+                      : 'Direct Git Clone & Install',
+                    cmd: 'git clone https://github.com/clonerdev/BitLite-System.git /opt/bitlite-system && cd /opt/bitlite-system && sudo ./install.sh'
                   },
                   {
                     key: 'arm64',
                     label: isFa ? 'اسکریپت نصب معماری ARM64' : 'ARM64 Architecture Installer',
-                    cmd: 'bash <(curl -s -L https://cdn.bitlitesystem.io/release/main/arm-install.sh)'
+                    cmd: 'bash <(curl -s -L https://raw.githubusercontent.com/clonerdev/BitLite-System/main/arm-install.sh)'
                   },
                   {
                     key: 'armv7',
                     label: isFa ? 'اسکریپت نصب معماری ARMV7' : 'ARMV7 Architecture Installer',
-                    cmd: 'bash <(curl -s -L https://cdn.bitlitesystem.io/release/main/armv7-install.sh)'
+                    cmd: 'bash <(curl -s -L https://raw.githubusercontent.com/clonerdev/BitLite-System/main/armv7-install.sh)'
                   }
                 ].map((item) => (
                   <div key={item.key} className="space-y-1">
@@ -2460,8 +2460,8 @@ export default function App() {
                   {selectedInstallMenu === 22 && (
                     <>
                       <div className="text-emerald-400">BitLite CLI tool installed successfully</div>
-                      <div>CLI path: /root/bitlitesystem/BitLiteCLI-{APP_VERSION}</div>
-                      <div>Command launcher: /usr/local/bin/bitlite (start | stop | restart)</div>
+                      <div>CLI path: /opt/bitlite-system (github.com/clonerdev/BitLite-System)</div>
+                      <div>Command launcher: /usr/local/bin/bitlite (start | stop | restart | status | logs | update)</div>
                     </>
                   )}
                   {selectedInstallMenu !== 1 &&
@@ -2471,7 +2471,7 @@ export default function App() {
                         <div className="text-emerald-400">
                           Executing menu action #{selectedInstallMenu} on systemd unit bitliteservice.service...
                         </div>
-                        <div>WorkingDirectory=/root/bitlitesystem/ | LimitNOFILE=65535 | Status=Active</div>
+                        <div>WorkingDirectory=/opt/bitlite-system/ | LimitNOFILE=1048576 | Status=Active</div>
                       </>
                     )}
                 </div>
@@ -2525,7 +2525,8 @@ export default function App() {
                   Commands: <span className="text-indigo-300">bitlite start</span> |{' '}
                   <span className="text-indigo-300">bitlite stop</span> |{' '}
                   <span className="text-indigo-300">bitlite restart</span> |{' '}
-                  <span className="text-indigo-300">bitlite status</span>
+                  <span className="text-indigo-300">bitlite status</span> |{' '}
+                  <span className="text-indigo-300">bitlite update</span>
                 </div>
               </div>
 
@@ -3616,7 +3617,14 @@ export default function App() {
         <div className="flex items-center gap-3" dir="ltr">
           <span>BitLite System v{APP_VERSION} · MIT License</span>
           <span aria-hidden="true">·</span>
-          <span>BLC Security Client v{APP_VERSION}</span>
+          <a
+            href="https://github.com/clonerdev/BitLite-System"
+            target="_blank"
+            rel="noreferrer"
+            className="text-slate-400 hover:text-indigo-400 transition-colors font-mono"
+          >
+            github.com/clonerdev/BitLite-System
+          </a>
         </div>
         <div className="flex items-center gap-4">
           <button

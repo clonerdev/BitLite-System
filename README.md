@@ -4,12 +4,12 @@
 
 **Stratum Pool Proxy, Self-Hosted Pool Node Gateway & Device-Level Miner Access Control**
 
-[![Version](https://img.shields.io/badge/version-1.0.0-indigo.svg)](./package.json)
+[![Version](https://img.shields.io/badge/version-1.0.0-indigo.svg)](https://github.com/clonerdev/BitLite-System)
 [![License: MIT](https://img.shields.io/badge/license-MIT-emerald.svg)](./LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Linux%20x86__64%20%7C%20ARM64%20%7C%20ARMv7-blue.svg)](#1-one-line-linux-installation-recommended)
 [![Language](https://img.shields.io/badge/UI-Persian%20(RTL)%20%26%20English-orange.svg)](./README.fa.md)
 
-**[🇮🇷 مستندات کامل فارسی (Persian README)](./README.fa.md)** • **[🇬🇧 English Documentation](./README.md)**
+**[🇮🇷 مستندات کامل فارسی (Persian README)](./README.fa.md)** • **[🇬🇧 English Documentation](./README.md)** • **[📦 GitHub Repository](https://github.com/clonerdev/BitLite-System)**
 
 </div>
 
@@ -71,22 +71,22 @@ Connect to your server as `root` via SSH and run the installer matching your CPU
 
 **Linux x86_64 (Standard Dedicated / VPS):**
 ```bash
-bash <(curl -s -L https://cdn.bitlitesystem.io/release/main/install.sh)
+bash <(curl -s -L https://raw.githubusercontent.com/clonerdev/BitLite-System/main/install.sh)
 ```
 
-**High-Speed Mirror (x86_64):**
+**Unattended Direct Install (x86_64):**
 ```bash
-bash <(curl -s -L -k https://mirror.bitlitesystem.io/release/main/install.sh)
+bash <(curl -s -L https://raw.githubusercontent.com/clonerdev/BitLite-System/main/install.sh) --install
 ```
 
 **ARM64 (`aarch64`) Servers:**
 ```bash
-bash <(curl -s -L https://cdn.bitlitesystem.io/release/main/arm-install.sh)
+bash <(curl -s -L https://raw.githubusercontent.com/clonerdev/BitLite-System/main/arm-install.sh)
 ```
 
 **ARMv7 (`armhf`) Devices:**
 ```bash
-bash <(curl -s -L https://cdn.bitlitesystem.io/release/main/armv7-install.sh)
+bash <(curl -s -L https://raw.githubusercontent.com/clonerdev/BitLite-System/main/armv7-install.sh)
 ```
 
 > **Local Script Execution:** If you have already cloned this repository onto your server, make the script executable and run it directly:
@@ -97,8 +97,8 @@ bash <(curl -s -L https://cdn.bitlitesystem.io/release/main/armv7-install.sh)
 
 #### Interactive Installer Menu Options
 When `./install.sh` launches, enter the option number for the operation you want to run:
-- `1` — **Install BitLite System** (sets up directory `/root/bitlitesystem` and `bitliteservice.service`)
-- `2` — **Update Version** (upgrades binaries/web console while preserving `data/access-control.json` and port configs)
+- `1` — **Install BitLite System** (clones `clonerdev/BitLite-System` into `/opt/bitlite-system` and registers `bitliteservice.service`)
+- `2` — **Update Version** (pulls latest commits from `clonerdev/BitLite-System` while preserving `data/access-control.json` and port configs)
 - `4` / `5` / `6` — **Start / Stop / Restart Service**
 - `7` — **Change Web Console Port** (default: `63521` or `3000`)
 - `8` — **Raise `ulimit` & Enable Kernel TCP BBR** (sets `fs.file-max=1048576` and `net.ipv4.tcp_congestion_control=bbr`)
@@ -123,7 +123,7 @@ node -v && npm -v
 
 #### Step 2: Clone the Repository & Install Dependencies
 ```bash
-git clone https://github.com/YOUR_USERNAME/bitlite-system.git /opt/bitlite-system
+git clone https://github.com/clonerdev/BitLite-System.git /opt/bitlite-system
 cd /opt/bitlite-system
 npm install
 ```
@@ -218,15 +218,18 @@ npm run build
 sudo systemctl restart bitliteservice
 ```
 
-### Method B: Updating via `install.sh`
-If you deployed via the installer script:
+### Method B: Updating via `install.sh` or `bitlite` CLI
+If you deployed via the installer script, you can update directly from `https://github.com/clonerdev/BitLite-System` with a single command:
+```bash
+bitlite update
+```
+Or run the interactive menu:
 ```bash
 sudo ./install.sh
 # Select option [2] (Update BitLite System)
 ```
-Or restart using the CLI tool after updating:
+Check service health after updating:
 ```bash
-bitlite restart
 bitlite status
 ```
 
@@ -291,6 +294,7 @@ Install the CLI shortcut by running `sudo ./install.sh --cli`. Available command
 | `bitlite stop` | Stop the BitLite System service |
 | `bitlite restart` | Restart the service and reload configuration |
 | `bitlite logs` | Tail live service logs (`journalctl -u bitliteservice -f`) |
+| `bitlite update` | Pull latest release from `clonerdev/BitLite-System`, rebuild, and restart |
 
 ---
 

@@ -901,7 +901,7 @@ async function startServer() {
     });
   }
 
-  const port = 3000;
+  const port = Number(process.env.START_PORT) || 3000;
   app.listen(port, '0.0.0.0', () => {
     console.log(`[BitLite System v1.0.0] Server listening on http://0.0.0.0:${port}`);
   });

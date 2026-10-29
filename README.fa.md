@@ -4,12 +4,12 @@
 
 **کنسول مدیریت پروکسی استخر ماینینگ، نود اختصاصی استخر (Self-Hosted Pool Node) و کنترل دسترسی سطح دستگاه**
 
-[![Version](https://img.shields.io/badge/version-1.0.0-indigo.svg)](./package.json)
+[![Version](https://img.shields.io/badge/version-1.0.0-indigo.svg)](https://github.com/clonerdev/BitLite-System)
 [![License: MIT](https://img.shields.io/badge/license-MIT-emerald.svg)](./LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Linux%20x86__64%20%7C%20ARM64%20%7C%20ARMv7-blue.svg)](#۱-نصب-خودکار-روی-سرور-لینوکس-پیشنهادی)
 [![Language](https://img.shields.io/badge/docs-فارسی%20%7C%20English-orange.svg)](./README.md)
 
-**[🇮🇷 مستندات فارسی (README.fa.md)](./README.fa.md)** • **[🇬🇧 English Documentation (README.md)](./README.md)**
+**[🇮🇷 مستندات فارسی (README.fa.md)](./README.fa.md)** • **[🇬🇧 English Documentation (README.md)](./README.md)** • **[📦 مخزن گیت‌هاب](https://github.com/clonerdev/BitLite-System)**
 
 </div>
 
@@ -71,22 +71,22 @@
 
 با دسترسی `root` از طریق SSH به سرور لینوکس خود متصل شوید و دستور متناسب با معماری پردازنده سرور را اجرا کنید:
 
-**سرورهای استاندارد لینوکس (x86_64):**
+**سرورهای استاندارد لینوکس (x86_64 - منوی تعاملی):**
 
 </div>
 
 ```bash
-bash <(curl -s -L https://cdn.bitlitesystem.io/release/main/install.sh)
+bash <(curl -s -L https://raw.githubusercontent.com/clonerdev/BitLite-System/main/install.sh)
 ```
 
 <div dir="rtl">
 
-**نصب از طریق آدرس میرور پرسرعت (Mirror):**
+**نصب مستقیم و بدون توقف روی لینوکس (Unattended Install):**
 
 </div>
 
 ```bash
-bash <(curl -s -L -k https://mirror.bitlitesystem.io/release/main/install.sh)
+bash <(curl -s -L https://raw.githubusercontent.com/clonerdev/BitLite-System/main/install.sh) --install
 ```
 
 <div dir="rtl">
@@ -96,7 +96,7 @@ bash <(curl -s -L -k https://mirror.bitlitesystem.io/release/main/install.sh)
 </div>
 
 ```bash
-bash <(curl -s -L https://cdn.bitlitesystem.io/release/main/arm-install.sh)
+bash <(curl -s -L https://raw.githubusercontent.com/clonerdev/BitLite-System/main/arm-install.sh)
 ```
 
 <div dir="rtl">
@@ -106,7 +106,7 @@ bash <(curl -s -L https://cdn.bitlitesystem.io/release/main/arm-install.sh)
 </div>
 
 ```bash
-bash <(curl -s -L https://cdn.bitlitesystem.io/release/main/armv7-install.sh)
+bash <(curl -s -L https://raw.githubusercontent.com/clonerdev/BitLite-System/main/armv7-install.sh)
 ```
 
 <div dir="rtl">
@@ -124,8 +124,8 @@ sudo ./install.sh
 
 #### راهنمای گزینه‌های منوی مدیریت ترمینال (`install.sh`)
 پس از اجرای اسکریپت، عدد گزینه مورد نظر را وارد کنید:
-- گزینه `1`: **نصب BitLite System** (ایجاد دایرکتوری `/root/bitlitesystem` و ثبت سرویس `bitliteservice.service`)
-- گزینه `2`: **بروزرسانی نسخه (Update)** (آپدیت هسته و پنل وب با حفظ کامل دیتابیس دسترسی‌ها و تنظیمات پورت‌ها)
+- گزینه `1`: **نصب BitLite System** (کلون کردن مخزن `clonerdev/BitLite-System` در مسیر `/opt/bitlite-system` و ثبت سرویس `bitliteservice.service`)
+- گزینه `2`: **بروزرسانی نسخه (Update)** (دریافت آخرین آپدیت از گیت‌هاب با حفظ کامل دیتابیس دسترسی‌ها و تنظیمات پورت‌ها)
 - گزینه‌های `4` / `5` / `6`: **شروع / توقف / راه‌اندازی مجدد سرویس**
 - گزینه `7`: **تغییر پورت پنل وب** (پورت پیش‌فرض: `63521` یا `3000`)
 - گزینه `8`: **افزایش سقف `ulimit` و فعال‌سازی TCP BBR هسته لینوکس** (`fs.file-max=1048576`)
@@ -158,7 +158,7 @@ node -v && npm -v
 </div>
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/bitlite-system.git /opt/bitlite-system
+git clone https://github.com/clonerdev/BitLite-System.git /opt/bitlite-system
 cd /opt/bitlite-system
 npm install
 ```
@@ -291,8 +291,18 @@ sudo systemctl restart bitliteservice
 
 <div dir="rtl">
 
-### روش دوم: بروزرسانی از طریق اسکریپت مدیریت (`install.sh`)
-در صورتی که از اسکریپت نصب استفاده می‌کنید، کافی است اسکریپت را اجرا کرده و گزینه **۲ (Update Version)** را وارد نمایید:
+### روش دوم: بروزرسانی سریع با دستور `bitlite` یا اسکریپت `install.sh`
+در صورتی که ابزار خط فرمان را نصب کرده‌اید، با یک دستور پروژه مستقیماً از مخزن `https://github.com/clonerdev/BitLite-System` آپدیت و ری‌استارت می‌شود:
+
+</div>
+
+```bash
+bitlite update
+```
+
+<div dir="rtl">
+
+یا اسکریپت مدیریت را اجرا کرده و گزینه **۲ (Update Version)** را وارد نمایید:
 
 </div>
 
@@ -308,7 +318,6 @@ sudo ./install.sh
 </div>
 
 ```bash
-bitlite restart
 bitlite status
 ```
 
@@ -389,6 +398,7 @@ WalletAddress.WorkerGroup.DeviceID
 | `bitlite stop` | متوقف کردن کامل سرویس |
 | `bitlite restart` | راه‌اندازی مجدد سرویس و بارگذاری مجدد تنظیمات |
 | `bitlite logs` | مشاهده زنده لاگ‌های سرویس (`journalctl -u bitliteservice -f`) |
+| `bitlite update` | دریافت آخرین آپدیت از مخزن `clonerdev/BitLite-System`، بیلد مجدد و ری‌استارت سرویس |
 
 ---
 

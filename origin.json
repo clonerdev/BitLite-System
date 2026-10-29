@@ -1,5 +1,6 @@
 {
   "version": "1.0.0",
   "BLC": "1.0.0",
-  "BitLiteCliVersion": "1.0.0"
+  "BitLiteCliVersion": "1.0.0",
+  "repository": "https://github.com/clonerdev/BitLite-System"
 }
