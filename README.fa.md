@@ -152,10 +152,6 @@
 
 </div>
 
-<div align="center">
-  <img src="./image/install.gif" alt="نصب خودکار BitLite System در ترمینال لینوکس" width="640" />
-</div>
-
 <div dir="rtl">
 
 ### ۱. نصب خودکار روی سرور لینوکس (پیشنهادی)

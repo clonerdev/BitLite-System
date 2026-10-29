@@ -143,10 +143,6 @@ Unlike traditional single-target Stratum proxies that forward a port to only one
 
 You can deploy BitLite System either using the **automated Linux installer script** or by **building directly from source** on your server.
 
-<div align="center">
-  <img src="./image/install.gif" alt="BitLite Linux Terminal Installation" width="640" />
-</div>
-
 ### 1. One-Line Linux Installation (Recommended)
 
 Connect to your server as `root` via SSH and run the installer matching your CPU architecture:
