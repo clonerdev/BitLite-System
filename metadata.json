@@ -1,0 +1,5 @@
+{
+  "name": "BitLite System",
+  "description": "BitLite System — End-to-end management console for mining pool proxies, self-hosted pool nodes, miner workers, fee rate policies, and multi-line farm operations.",
+  "requestFramePermissions": []
+}
