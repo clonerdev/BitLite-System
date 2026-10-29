@@ -1,7 +1,18 @@
 {
   "name": "bitlite-system-web",
+  "description": "High-performance Stratum mining pool proxy, self-hosted pool node gateway, and Wallet.Worker.Device access control console.",
   "private": true,
   "version": "1.0.0",
+  "license": "MIT",
+  "keywords": [
+    "stratum-proxy",
+    "mining-pool",
+    "asic-management",
+    "bitcoin-mining",
+    "merged-mining",
+    "access-control",
+    "bitlite"
+  ],
   "type": "module",
   "scripts": {
     "dev": "tsx server.ts",
